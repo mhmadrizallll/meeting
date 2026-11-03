@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title th:text="${pageTitle} + ' - Meeting Room Booking'">
+      Form Ruangan
+    </title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 35px 20px;
+        font-family: Arial, sans-serif;
+        background: #f4f6fa;
+        color: #1e293b;
+      }
+
+      .container {
+        max-width: 750px;
+        margin: auto;
+      }
+
+      .back {
+        display: inline-block;
+        color: #2563eb;
+        text-decoration: none;
+        margin-bottom: 20px;
+      }
+
+      .panel {
+        background: white;
+        padding: 30px;
+        border-radius: 14px;
+        box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+      }
+
+      h1 {
+        margin-top: 0;
+      }
+
+      .subtitle {
+        color: #64748b;
+        margin-bottom: 28px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: inherit;
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 100px;
+      }
+
+      input:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #2563eb;
+      }
+
+      .error {
+        color: #dc2626;
+        font-size: 12px;
+        margin-top: 6px;
+        display: block;
+      }
+
+      .alert {
+        background: #fee2e2;
+        color: #991b1b;
+        padding: 13px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+
+      .buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 28px;
+      }
+
+      button,
+      .cancel {
+        padding: 12px 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      button {
+        background: #2563eb;
+        color: white;
+      }
+
+      .cancel {
+        background: #e2e8f0;
+        color: #334155;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <a th:href="@{/admin/rooms}" class="back">
+        ← Kembali ke daftar ruangan
+      </a>
+
+      <section class="panel">
+        <h1 th:text="${pageTitle}">Tambah Ruangan</h1>
+
+        <p class="subtitle">Lengkapi informasi ruangan meeting di bawah ini.</p>
+
+        <div
+          th:if="${errorMessage}"
+          class="alert"
+          th:text="${errorMessage}"
+        ></div>
+
+        <form
+          th:action="@{/admin/rooms/save}"
+          th:object="${room}"
+          method="post"
+        >
+          <input type="hidden" th:field="*{roomId}" />
+
+          <div class="form-group">
+            <label>Nama Ruangan *</label>
+
+            <input
+              type="text"
+              th:field="*{roomName}"
+              placeholder="Contoh: Meeting Room A"
+            />
+
+            <span
+              class="error"
+              th:if="${#fields.hasErrors('roomName')}"
+              th:errors="*{roomName}"
+            ></span>
+          </div>
+
+          <div class="form-group">
+            <label>Lokasi *</label>
+
+            <input
+              type="text"
+              th:field="*{location}"
+              placeholder="Contoh: Lantai 2"
+            />
+
+            <span
+              class="error"
+              th:if="${#fields.hasErrors('location')}"
+              th:errors="*{location}"
+            ></span>
+          </div>
+
+          <div class="form-group">
+            <label>Kapasitas (orang) *</label>
+
+            <input
+              type="number"
+              th:field="*{capacity}"
+              min="1"
+              placeholder="Contoh: 10"
+            />
+
+            <span
+              class="error"
+              th:if="${#fields.hasErrors('capacity')}"
+              th:errors="*{capacity}"
+            ></span>
+          </div>
+
+          <div class="form-group">
+            <label>Fasilitas</label>
+
+            <textarea
+              th:field="*{facilities}"
+              placeholder="Contoh: Projector, Whiteboard, AC, WiFi"
+            ></textarea>
+
+            <span
+              class="error"
+              th:if="${#fields.hasErrors('facilities')}"
+              th:errors="*{facilities}"
+            ></span>
+          </div>
+
+          <div class="form-group">
+            <label>Deskripsi</label>
+
+            <textarea
+              th:field="*{description}"
+              placeholder="Deskripsi tambahan ruangan"
+            ></textarea>
+
+            <span
+              class="error"
+              th:if="${#fields.hasErrors('description')}"
+              th:errors="*{description}"
+            ></span>
+          </div>
+
+          <div class="buttons">
+            <button type="submit">Simpan Ruangan</button>
+
+            <a th:href="@{/admin/rooms}" class="cancel"> Batal </a>
+          </div>
+        </form>
+      </section>
+    </div>
+  </body>
+</html>

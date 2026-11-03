@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kelola Ruangan - Meeting Room Booking</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f4f6fa;
+        color: #1e293b;
+      }
+
+      .sidebar {
+        position: fixed;
+        width: 240px;
+        height: 100vh;
+        background: #172554;
+        color: white;
+        padding: 28px 20px;
+      }
+
+      .brand {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 40px;
+      }
+
+      .sidebar a {
+        display: block;
+        color: #cbd5e1;
+        text-decoration: none;
+        padding: 13px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+      }
+
+      .sidebar a.active,
+      .sidebar a:hover {
+        background: #2563eb;
+        color: white;
+      }
+
+      .main {
+        margin-left: 240px;
+        padding: 35px;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        gap: 15px;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 26px;
+      }
+
+      .subtitle {
+        color: #64748b;
+        margin: 0;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 11px 16px;
+        border-radius: 8px;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .btn-primary {
+        background: #2563eb;
+        color: white;
+      }
+
+      .btn-edit {
+        background: #e0e7ff;
+        color: #3730a3;
+      }
+
+      .btn-success {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .btn-danger {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .panel {
+        background: white;
+        border-radius: 14px;
+        padding: 24px;
+        box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+      }
+
+      .alert {
+        padding: 14px 16px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+
+      .alert-success {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .table-wrapper {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 750px;
+      }
+
+      th,
+      td {
+        padding: 15px 12px;
+        text-align: left;
+        border-bottom: 1px solid #e2e8f0;
+        font-size: 14px;
+      }
+
+      th {
+        color: #64748b;
+        font-size: 12px;
+        text-transform: uppercase;
+        background: #f8fafc;
+      }
+
+      .status {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+      }
+
+      .active-status {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .inactive-status {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+
+      .actions form {
+        margin: 0;
+      }
+
+      @media (max-width: 800px) {
+        .sidebar {
+          position: static;
+          width: 100%;
+          height: auto;
+        }
+
+        .main {
+          margin-left: 0;
+          padding: 20px;
+        }
+
+        .header {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <aside class="sidebar">
+      <div class="brand">Meeting Room</div>
+
+      <a th:href="@{/admin/dashboard}">Dashboard</a>
+      <a th:href="@{/admin/rooms}" class="active">Kelola Ruangan</a>
+
+      <form th:action="@{/admin/logout}" method="post">
+        <button
+          class="btn"
+          style="
+            color: white;
+            background: #334155;
+            width: 100%;
+            margin-top: 25px;
+          "
+        >
+          Logout
+        </button>
+      </form>
+    </aside>
+
+    <main class="main">
+      <div class="header">
+        <div>
+          <h1>Kelola Ruangan</h1>
+          <p class="subtitle">
+            Tambah, edit, dan atur ketersediaan ruangan meeting.
+          </p>
+        </div>
+
+        <a th:href="@{/admin/rooms/new}" class="btn btn-primary">
+          + Tambah Ruangan
+        </a>
+      </div>
+
+      <div
+        th:if="${successMessage}"
+        class="alert alert-success"
+        th:text="${successMessage}"
+      ></div>
+
+      <section class="panel">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>No.</th>
+                <th>Nama Ruangan</th>
+                <th>Lokasi</th>
+                <th>Kapasitas</th>
+                <th>Fasilitas</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr th:each="room, iter : ${rooms}">
+                <td th:text="${iter.count}">1</td>
+
+                <td>
+                  <strong th:text="${room.roomName}">Meeting Room A</strong>
+                </td>
+
+                <td th:text="${room.location}">Lantai 1</td>
+
+                <td th:text="${room.capacity} + ' orang'">10 orang</td>
+
+                <td th:text="${room.facilities ?: '-'}">Projector</td>
+
+                <td>
+                  <span
+                    th:if="${room.status == 'ACTIVE'}"
+                    class="status active-status"
+                    >Aktif</span
+                  >
+
+                  <span
+                    th:unless="${room.status == 'ACTIVE'}"
+                    class="status inactive-status"
+                    >Nonaktif</span
+                  >
+                </td>
+
+                <td>
+                  <div class="actions">
+                    <a
+                      th:href="@{/admin/rooms/{id}/edit(id=${room.roomId})}"
+                      class="btn btn-edit"
+                      >Edit</a
+                    >
+
+                    <form
+                      th:if="${room.status == 'ACTIVE'}"
+                      th:action="@{/admin/rooms/{id}/deactivate(id=${room.roomId})}"
+                      method="post"
+                      onsubmit="return confirm('Nonaktifkan ruangan ini?');"
+                    >
+                      <button class="btn btn-danger" type="submit">
+                        Nonaktifkan
+                      </button>
+                    </form>
+
+                    <form
+                      th:unless="${room.status == 'ACTIVE'}"
+                      th:action="@{/admin/rooms/{id}/activate(id=${room.roomId})}"
+                      method="post"
+                    >
+                      <button class="btn btn-success" type="submit">
+                        Aktifkan
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+
+              <tr th:if="${#lists.isEmpty(rooms)}">
+                <td colspan="7" style="text-align: center; color: #64748b">
+                  Belum ada data ruangan.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Kelola Booking - Meeting Room</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f4f6fa;
+        color: #1e293b;
+      }
+
+      .sidebar {
+        position: fixed;
+        width: 240px;
+        height: 100vh;
+        background: #172554;
+        color: white;
+        padding: 28px 20px;
+      }
+
+      .brand {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 40px;
+      }
+
+      .sidebar a {
+        display: block;
+        color: #cbd5e1;
+        text-decoration: none;
+        padding: 13px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+      }
+
+      .sidebar a.active,
+      .sidebar a:hover {
+        background: #2563eb;
+        color: white;
+      }
+
+      .main {
+        margin-left: 240px;
+        padding: 35px;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+      }
+
+      .subtitle {
+        color: #64748b;
+        margin-bottom: 25px;
+      }
+
+      .panel {
+        background: white;
+        border-radius: 14px;
+        padding: 24px;
+        box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+      }
+
+      .alert {
+        padding: 14px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+
+      .success {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .danger-alert {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .filter {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+
+      select,
+      .btn {
+        padding: 10px 14px;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        font-size: 13px;
+      }
+
+      .btn {
+        text-decoration: none;
+        cursor: pointer;
+        font-weight: 600;
+        border: none;
+        display: inline-block;
+      }
+
+      .primary {
+        background: #2563eb;
+        color: white;
+      }
+      .view {
+        background: #e0e7ff;
+        color: #3730a3;
+      }
+      .complete {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .cancel {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .table-wrapper {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 950px;
+      }
+
+      th,
+      td {
+        padding: 14px 12px;
+        text-align: left;
+        border-bottom: 1px solid #e2e8f0;
+        font-size: 13px;
+      }
+
+      th {
+        background: #f8fafc;
+        color: #64748b;
+        font-size: 12px;
+        text-transform: uppercase;
+      }
+
+      .status {
+        padding: 6px 9px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: bold;
+      }
+
+      .CONFIRMED {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+      .CANCELLED {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .COMPLETED {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .actions {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+
+      .actions form {
+        margin: 0;
+      }
+
+      @media (max-width: 800px) {
+        .sidebar {
+          position: static;
+          width: 100%;
+          height: auto;
+        }
+
+        .main {
+          margin-left: 0;
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <aside class="sidebar">
+      <div class="brand">Meeting Room</div>
+
+      <a th:href="@{/admin/dashboard}">Dashboard</a>
+      <a th:href="@{/admin/rooms}">Kelola Ruangan</a>
+      <a th:href="@{/admin/bookings}" class="active">Kelola Booking</a>
+
+      <form th:action="@{/admin/logout}" method="post">
+        <button
+          class="btn"
+          style="
+            background: #334155;
+            color: white;
+            width: 100%;
+            margin-top: 25px;
+          "
+        >
+          Logout
+        </button>
+      </form>
+    </aside>
+
+    <main class="main">
+      <h1>Kelola Booking</h1>
+      <p class="subtitle">
+        Monitoring dan pengelolaan seluruh booking meeting.
+      </p>
+
+      <div
+        th:if="${successMessage}"
+        class="alert success"
+        th:text="${successMessage}"
+      ></div>
+
+      <div
+        th:if="${errorMessage}"
+        class="alert danger-alert"
+        th:text="${errorMessage}"
+      ></div>
+
+      <section class="panel">
+        <form th:action="@{/admin/bookings}" method="get" class="filter">
+          <select name="status">
+            <option value="">Semua Status</option>
+            <option
+              value="CONFIRMED"
+              th:selected="${selectedStatus == 'CONFIRMED'}"
+            >
+              Confirmed
+            </option>
+            <option
+              value="CANCELLED"
+              th:selected="${selectedStatus == 'CANCELLED'}"
+            >
+              Cancelled
+            </option>
+            <option
+              value="COMPLETED"
+              th:selected="${selectedStatus == 'COMPLETED'}"
+            >
+              Completed
+            </option>
+          </select>
+
+          <button class="btn primary" type="submit">Filter</button>
+
+          <a th:href="@{/admin/bookings}" class="btn view">Reset</a>
+        </form>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>No.</th>
+                <th>Kode Booking</th>
+                <th>Pemesan</th>
+                <th>Ruangan</th>
+                <th>Agenda</th>
+                <th>Waktu</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr th:each="booking, iter : ${bookings}">
+                <td th:text="${iter.count}">1</td>
+
+                <td>
+                  <strong th:text="${booking.bookingCode}">MRB-12345678</strong>
+                </td>
+
+                <td th:text="${booking.bookerName}">John Doe</td>
+
+                <td th:text="${booking.meetingRoom.roomName}">
+                  Meeting Room A
+                </td>
+
+                <td th:text="${booking.agenda}">Meeting</td>
+
+                <td>
+                  <div
+                    th:text="${#temporals.format(booking.startTime, 'dd-MM-yyyy')}"
+                  ></div>
+                  <div>
+                    <span
+                      th:text="${#temporals.format(booking.startTime, 'HH:mm')}"
+                    ></span>
+                    -
+                    <span
+                      th:text="${#temporals.format(booking.endTime, 'HH:mm')}"
+                    ></span>
+                  </div>
+                </td>
+
+                <td>
+                  <span
+                    class="status"
+                    th:classappend="${booking.status}"
+                    th:text="${booking.status}"
+                  >
+                  </span>
+                </td>
+
+                <td>
+                  <div class="actions">
+                    <a
+                      th:href="@{/admin/bookings/{id}(id=${booking.bookingId})}"
+                      class="btn view"
+                      >Detail</a
+                    >
+
+                    <form
+                      th:if="${booking.status == 'CONFIRMED'}"
+                      th:action="@{/admin/bookings/{id}/complete(id=${booking.bookingId})}"
+                      method="post"
+                      onsubmit="return confirm('Tandai booking selesai?');"
+                    >
+                      <button type="submit" class="btn complete">
+                        Selesai
+                      </button>
+                    </form>
+
+                    <form
+                      th:if="${booking.status == 'CONFIRMED'}"
+                      th:action="@{/admin/bookings/{id}/cancel(id=${booking.bookingId})}"
+                      method="post"
+                      onsubmit="return confirm('Batalkan booking ini?');"
+                    >
+                      <button type="submit" class="btn cancel">Batalkan</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+
+              <tr th:if="${#lists.isEmpty(bookings)}">
+                <td colspan="8" style="text-align: center; color: #64748b">
+                  Tidak ada data booking.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

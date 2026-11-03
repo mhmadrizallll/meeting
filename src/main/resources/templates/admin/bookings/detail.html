@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Detail Booking</title>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 30px 20px;
+        font-family: Arial, sans-serif;
+        background: #f4f6fa;
+        color: #1e293b;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: auto;
+      }
+
+      .back {
+        display: inline-block;
+        margin-bottom: 20px;
+        color: #2563eb;
+        text-decoration: none;
+      }
+
+      .panel {
+        background: white;
+        padding: 30px;
+        border-radius: 14px;
+        box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+      }
+
+      h1 {
+        margin-top: 0;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 22px;
+      }
+
+      .item {
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .label {
+        color: #64748b;
+        font-size: 12px;
+        margin-bottom: 8px;
+      }
+
+      .value {
+        font-weight: 600;
+        word-break: break-word;
+      }
+
+      .buttons {
+        margin-top: 25px;
+        display: flex;
+        gap: 10px;
+      }
+
+      .btn {
+        padding: 11px 16px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .back-btn {
+        background: #e2e8f0;
+        color: #334155;
+      }
+      .cancel-btn {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .complete-btn {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      @media (max-width: 600px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <a th:href="@{/admin/bookings}" class="back">
+        ← Kembali ke daftar booking
+      </a>
+
+      <section class="panel">
+        <h1>Detail Booking</h1>
+
+        <div class="grid">
+          <div class="item">
+            <div class="label">Kode Booking</div>
+            <div class="value" th:text="${booking.bookingCode}"></div>
+          </div>
+
+          <div class="item">
+            <div class="label">Status</div>
+            <div class="value" th:text="${booking.status}"></div>
+          </div>
+
+          <div class="item">
+            <div class="label">Nama Pemesan</div>
+            <div class="value" th:text="${booking.bookerName}"></div>
+          </div>
+
+          <div class="item">
+            <div class="label">Email</div>
+            <div class="value" th:text="${booking.email}"></div>
+          </div>
+
+          <div class="item">
+            <div class="label">Telepon</div>
+            <div class="value" th:text="${booking.phone}"></div>
+          </div>
+
+          <div class="item">
+            <div class="label">Departemen</div>
+            <div class="value" th:text="${booking.department ?: '-'}"></div>
+          </div>
+
+          <div class="item">
+            <div class="label">Ruangan</div>
+            <div class="value" th:text="${booking.meetingRoom.roomName}"></div>
+          </div>
+
+          <div class="item">
+            <div class="label">Lokasi Ruangan</div>
+            <div class="value" th:text="${booking.meetingRoom.location}"></div>
+          </div>
+
+          <div class="item">
+            <div class="label">Tanggal Meeting</div>
+            <div
+              class="value"
+              th:text="${#temporals.format(booking.startTime, 'dd MMMM yyyy')}"
+            ></div>
+          </div>
+
+          <div class="item">
+            <div class="label">Waktu Meeting</div>
+            <div class="value">
+              <span
+                th:text="${#temporals.format(booking.startTime, 'HH:mm')}"
+              ></span>
+              -
+              <span
+                th:text="${#temporals.format(booking.endTime, 'HH:mm')}"
+              ></span>
+            </div>
+          </div>
+
+          <div class="item" style="grid-column: 1/-1">
+            <div class="label">Agenda</div>
+            <div class="value" th:text="${booking.agenda}"></div>
+          </div>
+        </div>
+
+        <div class="buttons">
+          <a th:href="@{/admin/bookings}" class="btn back-btn"> Kembali </a>
+
+          <form
+            th:if="${booking.status == 'CONFIRMED'}"
+            th:action="@{/admin/bookings/{id}/complete(id=${booking.bookingId})}"
+            method="post"
+            onsubmit="return confirm('Tandai booking selesai?');"
+          >
+            <button class="btn complete-btn" type="submit">
+              Selesaikan Booking
+            </button>
+          </form>
+
+          <form
+            th:if="${booking.status == 'CONFIRMED'}"
+            th:action="@{/admin/bookings/{id}/cancel(id=${booking.bookingId})}"
+            method="post"
+            onsubmit="return confirm('Batalkan booking ini?');"
+          >
+            <button class="btn cancel-btn" type="submit">
+              Batalkan Booking
+            </button>
+          </form>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

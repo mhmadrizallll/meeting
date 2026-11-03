@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Meeting Room Booking</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 30px 16px;
+        font-family: Arial, sans-serif;
+        background: #f4f6fb;
+        color: #1f2937;
+      }
+
+      .container {
+        max-width: 750px;
+        margin: auto;
+      }
+
+      .header {
+        margin-bottom: 25px;
+      }
+
+      .header h1 {
+        margin-bottom: 8px;
+        color: #172554;
+      }
+
+      .header p {
+        color: #64748b;
+        line-height: 1.6;
+      }
+
+      .card {
+        background: white;
+        padding: 28px;
+        border-radius: 14px;
+        box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+      }
+
+      .form-group {
+        margin-bottom: 18px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #dbe1ea;
+        border-radius: 8px;
+        font-size: 14px;
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 90px;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #2563eb;
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+
+      button {
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 8px;
+        background: #2563eb;
+        color: white;
+        font-size: 15px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #1d4ed8;
+      }
+
+      .error {
+        color: #dc2626;
+        font-size: 13px;
+        margin-top: 6px;
+      }
+
+      .alert {
+        background: #fee2e2;
+        color: #991b1b;
+        padding: 13px;
+        border-radius: 8px;
+        margin-bottom: 18px;
+      }
+
+      @media (max-width: 600px) {
+        .row {
+          grid-template-columns: 1fr;
+          gap: 0;
+        }
+
+        .card {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Meeting Room Booking</h1>
+        <p>
+          Silakan isi formulir berikut untuk melakukan pemesanan ruang meeting.
+        </p>
+      </div>
+
+      <div class="card">
+        <div
+          class="alert"
+          th:if="${bookingError}"
+          th:text="${bookingError}"
+        ></div>
+
+        <form
+          th:action="@{/booking}"
+          th:object="${bookingRequest}"
+          method="post"
+        >
+          <div class="form-group">
+            <label>Nama Lengkap</label>
+
+            <input
+              type="text"
+              th:field="*{bookerName}"
+              placeholder="Masukkan nama lengkap"
+            />
+
+            <div class="error" th:errors="*{bookerName}"></div>
+          </div>
+
+          <div class="row">
+            <div class="form-group">
+              <label>Email</label>
+
+              <input
+                type="email"
+                th:field="*{email}"
+                placeholder="nama@email.com"
+              />
+
+              <div class="error" th:errors="*{email}"></div>
+            </div>
+
+            <div class="form-group">
+              <label>Nomor Telepon</label>
+
+              <input
+                type="text"
+                th:field="*{phone}"
+                placeholder="08xxxxxxxxxx"
+              />
+
+              <div class="error" th:errors="*{phone}"></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Departemen</label>
+
+            <input
+              type="text"
+              th:field="*{department}"
+              placeholder="Contoh: IT Department"
+            />
+
+            <div class="error" th:errors="*{department}"></div>
+          </div>
+
+          <div class="form-group">
+            <label>Pilih Ruangan</label>
+
+            <select th:field="*{roomId}">
+              <option value="">-- Pilih Ruangan --</option>
+
+              <option
+                th:each="room : ${rooms}"
+                th:value="${room.roomId}"
+                th:text="${room.roomName + ' - Kapasitas ' + room.capacity}"
+              ></option>
+            </select>
+
+            <div class="error" th:errors="*{roomId}"></div>
+          </div>
+
+          <div class="form-group">
+            <label>Agenda Meeting</label>
+
+            <textarea
+              th:field="*{agenda}"
+              placeholder="Jelaskan keperluan meeting"
+            >
+            </textarea>
+
+            <div class="error" th:errors="*{agenda}"></div>
+          </div>
+
+          <div class="row">
+            <div class="form-group">
+              <label>Waktu Mulai</label>
+
+              <input type="datetime-local" th:field="*{startTime}" />
+
+              <div class="error" th:errors="*{startTime}"></div>
+            </div>
+
+            <div class="form-group">
+              <label>Waktu Selesai</label>
+
+              <input type="datetime-local" th:field="*{endTime}" />
+
+              <div class="error" th:errors="*{endTime}"></div>
+            </div>
+          </div>
+
+          <div class="error" th:errors="*{endTimeAfterStartTime}"></div>
+
+          <button type="submit">Booking Sekarang</button>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
