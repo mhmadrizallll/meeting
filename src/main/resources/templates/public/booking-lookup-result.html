@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Hasil Booking - Meeting Room</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 25px 15px;
+        font-family: Arial, sans-serif;
+        background: #f1f5f9;
+        color: #1e293b;
+      }
+
+      .container {
+        max-width: 650px;
+        margin: 30px auto;
+      }
+
+      .card {
+        background: white;
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 10px 35px rgba(15, 23, 42, 0.05);
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .header h1 {
+        margin-bottom: 10px;
+      }
+
+      .header p {
+        color: #64748b;
+      }
+
+      .status {
+        display: inline-block;
+        padding: 8px 14px;
+        border-radius: 30px;
+        font-size: 12px;
+        font-weight: bold;
+      }
+
+      .confirmed {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+
+      .cancelled {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .completed {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .code {
+        text-align: center;
+        background: #f8fafc;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+      }
+
+      .code small {
+        color: #64748b;
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .code strong {
+        font-size: 22px;
+        color: #2563eb;
+      }
+
+      .item {
+        padding: 15px 0;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .label {
+        font-size: 12px;
+        color: #64748b;
+        margin-bottom: 7px;
+      }
+
+      .value {
+        font-weight: 600;
+        font-size: 14px;
+        word-break: break-word;
+      }
+
+      .button {
+        display: block;
+        text-align: center;
+        margin-top: 25px;
+        padding: 13px;
+        background: #2563eb;
+        color: white;
+        border-radius: 9px;
+        text-decoration: none;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <section class="card">
+        <div class="header">
+          <h1>Detail Booking</h1>
+          <p>Informasi reservasi meeting Anda</p>
+
+          <span
+            th:if="${booking.status == 'CONFIRMED'}"
+            class="status confirmed"
+          >
+            CONFIRMED
+          </span>
+
+          <span
+            th:if="${booking.status == 'CANCELLED'}"
+            class="status cancelled"
+          >
+            CANCELLED
+          </span>
+
+          <span
+            th:if="${booking.status == 'COMPLETED'}"
+            class="status completed"
+          >
+            COMPLETED
+          </span>
+        </div>
+
+        <div class="code">
+          <small>KODE BOOKING</small>
+          <strong th:text="${booking.bookingCode}">MRB-12345678</strong>
+        </div>
+
+        <div class="item">
+          <div class="label">Nama Pemesan</div>
+          <div class="value" th:text="${booking.bookerName}"></div>
+        </div>
+
+        <div class="item">
+          <div class="label">Ruangan</div>
+          <div class="value" th:text="${booking.meetingRoom.roomName}"></div>
+        </div>
+
+        <div class="item">
+          <div class="label">Lokasi</div>
+          <div class="value" th:text="${booking.meetingRoom.location}"></div>
+        </div>
+
+        <div class="item">
+          <div class="label">Agenda</div>
+          <div class="value" th:text="${booking.agenda}"></div>
+        </div>
+
+        <div class="item">
+          <div class="label">Tanggal Meeting</div>
+          <div
+            class="value"
+            th:text="${#temporals.format(booking.startTime, 'dd MMMM yyyy')}"
+          ></div>
+        </div>
+
+        <div class="item">
+          <div class="label">Waktu Meeting</div>
+          <div class="value">
+            <span
+              th:text="${#temporals.format(booking.startTime, 'HH:mm')}"
+            ></span>
+            -
+            <span
+              th:text="${#temporals.format(booking.endTime, 'HH:mm')}"
+            ></span>
+          </div>
+        </div>
+
+        <a th:href="@{/booking/lookup}" class="button"> Cari Booking Lain </a>
+      </section>
+    </div>
+  </body>
+</html>

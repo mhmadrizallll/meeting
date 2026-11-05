@@ -12,11 +12,32 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+
+
 @Repository
 public interface BookingRepository
         extends JpaRepository<Booking, Long> {
+        
+    @EntityGraph(attributePaths = {"meetingRoom"})
+    @Query("""
+        SELECT b FROM Booking b
+        WHERE b.startTime < :weekEnd
+          AND b.endTime > :weekStart
+          AND b.status <> 'CANCELLED'
+        ORDER BY b.startTime ASC
+    """)
+    List<Booking> findBookingsByWeek(
+            @Param("weekStart") LocalDateTime weekStart,
+            @Param("weekEnd") LocalDateTime weekEnd
+    );        
 
     // Mencari booking berdasarkan kode
+    @EntityGraph(attributePaths = {"meetingRoom"})
     Optional<Booking> findByBookingCode(String bookingCode);
 
     // Mencari booking berdasarkan email
@@ -29,6 +50,7 @@ public interface BookingRepository
     List<Booking> findByStatusOrderByStartTimeAsc(String status);
 
     // Mencari booking pada tanggal tertentu
+    @EntityGraph(attributePaths = {"meetingRoom"})
     @Query("""
         SELECT b
         FROM Booking b
@@ -57,14 +79,20 @@ public interface BookingRepository
     );
 
     // Mencari booking berdasarkan kode dan email
-    Optional<Booking> findByBookingCodeAndEmailIgnoreCase(
+    @EntityGraph(attributePaths = {"meetingRoom"})
+        Optional<Booking> findByBookingCodeAndEmailIgnoreCase(
             String bookingCode,
             String email
-    );
+        );
     
     long countByStatus(String status);
 
     long countByStatusNot(String status);
     
+    @EntityGraph(attributePaths = {"meetingRoom"})
     List<Booking> findTop10ByOrderByCreatedAtDesc();
+    
+    @Override
+    @EntityGraph(attributePaths = {"meetingRoom"})
+    Optional<Booking> findById(Long id);
 }

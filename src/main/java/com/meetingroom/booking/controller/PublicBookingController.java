@@ -34,7 +34,7 @@ public class PublicBookingController {
     // HALAMAN BOOKING
     // ==========================================
 
-    @GetMapping("/")
+    @GetMapping("/booking")
     public String showBookingPage(Model model) {
 
         model.addAttribute(

@@ -12,6 +12,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import java.util.Optional;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Service
 @Transactional
 public class BookingService {
@@ -244,4 +249,39 @@ public class BookingService {
     //                     "Booking tidak ditemukan dengan ID: " + bookingId
     //             ));
     // }
+    
+    @Transactional(readOnly = true)
+    public Optional<Booking> findBookingByCodeAndEmail(
+            String bookingCode,
+            String email
+    ) {
+        return bookingRepository.findByBookingCodeAndEmailIgnoreCase(
+                bookingCode.trim(),
+                email.trim()
+        );
+    }
+    
+    @Transactional(readOnly = true)
+    public List<Booking> getTodayBookings() {
+        LocalDate today = LocalDate.now();
+    
+        LocalDateTime dayStart = today.atStartOfDay();
+        LocalDateTime dayEnd = today.plusDays(1).atStartOfDay();
+    
+        return bookingRepository.findBookingsByDate(dayStart, dayEnd)
+            .stream()
+            .filter(booking -> !"CANCELLED".equals(booking.getStatus()))
+            .toList();
+    }
+    
+    @Transactional(readOnly = true)
+    public List<Booking> getBookingsByWeek(
+            LocalDateTime weekStart,
+            LocalDateTime weekEnd) {
+    
+        return bookingRepository.findBookingsByWeek(
+                weekStart,
+                weekEnd
+        );
+    }
 }

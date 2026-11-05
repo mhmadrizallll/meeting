@@ -243,6 +243,35 @@
           font-size: 21px;
         }
       }
+
+      /* TODAY MONITORING */
+
+      .today-badge {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: bold;
+      }
+
+      .badge-upcoming {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+
+      .badge-ongoing {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .badge-finished {
+        background: #e2e8f0;
+        color: #475569;
+      }
+
+      .today-panel {
+        margin-bottom: 28px;
+      }
     </style>
   </head>
 
@@ -256,7 +285,8 @@
       <div class="menu-label">Main Menu</div>
 
       <a th:href="@{/admin/dashboard}" class="menu-item active"> Dashboard </a>
-      <a th:href="@{/admin/rooms}">Kelola Ruangan</a>
+      <a th:href="@{/admin/rooms}" class="menu-item">Kelola Ruangan</a>
+      <a th:href="@{/admin/calendar}" class="menu-item"> Kalender Meeting </a>
 
       <a href="#recent-bookings" class="menu-item"> Monitoring Booking </a>
 
@@ -303,6 +333,133 @@
           <div class="stat-label">Ruangan Aktif</div>
 
           <div class="stat-number purple" th:text="${activeRooms}">0</div>
+        </div>
+      </section>
+
+      <!-- MONITORING STATISTICS -->
+
+      <section class="stats">
+        <div class="stat-card">
+          <div class="stat-label">Booking Hari Ini</div>
+          <div class="stat-number blue" th:text="${todayBookingCount}">0</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Sedang Meeting</div>
+          <div class="stat-number green" th:text="${ongoingMeetingCount}">
+            0
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Ruangan Terpakai</div>
+          <div class="stat-number purple" th:text="${occupiedRoomCount}">0</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">Meeting Berikutnya</div>
+
+          <div
+            class="stat-number blue"
+            style="font-size: 20px"
+            th:text="${nextMeeting != null
+           ? #temporals.format(nextMeeting.startTime, 'HH:mm')
+           : '-'}"
+          >
+            -
+          </div>
+
+          <div
+            class="subtitle"
+            th:if="${nextMeeting != null}"
+            th:text="${nextMeeting.meetingRoom.roomName}"
+          ></div>
+        </div>
+      </section>
+
+      <!-- TODAY MONITORING -->
+
+      <!-- TODAY MONITORING -->
+
+      <section class="panel today-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Monitoring Meeting Hari Ini</h2>
+            <div class="subtitle" th:text="${formattedDate}"></div>
+          </div>
+
+          <span class="status status-confirmed">
+            <span th:text="${todayBookings.size()}"></span>
+            Meeting
+          </span>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Waktu</th>
+                <th>Ruangan</th>
+                <th>Agenda</th>
+                <th>Pemesan</th>
+                <th>Departemen</th>
+                <th>Status Meeting</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr th:each="booking : ${todayBookings}">
+                <td>
+                  <strong
+                    th:text="${#temporals.format(booking.startTime, 'HH:mm')}
+                + ' - '
+                + ${#temporals.format(booking.endTime, 'HH:mm')}"
+                  ></strong>
+                </td>
+
+                <td th:text="${booking.meetingRoom.roomName}"></td>
+
+                <td th:text="${booking.agenda}"></td>
+
+                <td th:text="${booking.bookerName}"></td>
+
+                <td th:text="${booking.department}"></td>
+
+                <td>
+                  <!-- Akan Datang -->
+                  <span
+                    class="today-badge badge-upcoming"
+                    th:if="${booking.startTime.isAfter(now)}"
+                  >
+                    Akan Datang
+                  </span>
+
+                  <!-- Sedang Meeting -->
+                  <span
+                    class="today-badge badge-ongoing"
+                    th:if="${!booking.startTime.isAfter(now)
+                    and booking.endTime.isAfter(now)}"
+                  >
+                    Sedang Meeting
+                  </span>
+
+                  <!-- Selesai -->
+                  <span
+                    class="today-badge badge-finished"
+                    th:if="${!booking.endTime.isAfter(now)}"
+                  >
+                    Selesai
+                  </span>
+                </td>
+              </tr>
+
+              <tr th:if="${#lists.isEmpty(todayBookings)}">
+                <td colspan="6" class="empty">
+                  Tidak ada meeting terjadwal hari ini.
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
 

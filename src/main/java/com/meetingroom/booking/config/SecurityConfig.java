@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import jakarta.servlet.DispatcherType;
 
 @Configuration
 public class SecurityConfig {
@@ -33,25 +34,25 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
 
-                // Halaman login dan halaman publik
-                .requestMatchers(
-                    "/",
-                    "/booking",
-                    "/booking/success/**",
-                    "/admin/login",
-                    "/css/**",
-                    "/js/**",
-                    "/images/**",
-                    "/favicon.ico"
-                ).permitAll()
-
-                // Semua halaman admin harus login
-                .requestMatchers("/admin/**")
-                .hasRole("ADMIN")
-
-                // URL lainnya harus login
-                .anyRequest().authenticated()
-            )
+            .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
+        
+            .requestMatchers(
+                "/",
+                "/booking",
+                "/booking/success/**",
+                "/booking/lookup",
+                "/admin/login",
+                "/error",
+                "/css/**",
+                "/js/**",
+                "/images/**",
+                "/favicon.ico"
+            ).permitAll()
+        
+            .requestMatchers("/admin/**").hasRole("ADMIN")
+        
+            .anyRequest().authenticated()
+        )
 
             .formLogin(form -> form
                 .loginPage("/admin/login")

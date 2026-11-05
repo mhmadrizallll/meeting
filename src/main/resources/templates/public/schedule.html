@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jadwal Meeting Hari Ini</title>
+
+    <link rel="stylesheet" th:href="@{/css/schedule.css}" />
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <div>
+          <span class="eyebrow">MEETING ROOM BOOKING</span>
+          <h1>Jadwal Meeting Hari Ini</h1>
+          <p th:text="${formattedDate}">Tanggal hari ini</p>
+        </div>
+
+        <a th:href="@{/booking}" class="btn-book">+ Booking Ruangan</a>
+      </header>
+
+      <section class="summary">
+        <div class="summary-card">
+          <span>Total Meeting Hari Ini</span>
+          <h2 th:text="${totalBookings}">0</h2>
+        </div>
+      </section>
+
+      <section class="schedule-section">
+        <div class="section-heading">
+          <h2>Daftar Meeting</h2>
+          <span class="badge-date">Hari Ini</span>
+        </div>
+
+        <div th:if="${#lists.isEmpty(bookings)}" class="empty-state">
+          <h3>Belum Ada Meeting</h3>
+          <p>Belum ada jadwal meeting untuk hari ini.</p>
+        </div>
+
+        <div class="table-wrapper" th:unless="${#lists.isEmpty(bookings)}">
+          <table>
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Waktu</th>
+                <th>Ruangan</th>
+                <th>Pemesan</th>
+                <th>Agenda</th>
+                <th>Departemen</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr th:each="booking, stat : ${bookings}">
+                <td th:text="${stat.count}">1</td>
+
+                <td class="time">
+                  <span
+                    th:text="${#temporals.format(booking.startTime, 'HH:mm')}"
+                    >09:00</span
+                  >
+                  -
+                  <span th:text="${#temporals.format(booking.endTime, 'HH:mm')}"
+                    >10:00</span
+                  >
+                </td>
+
+                <td>
+                  <strong th:text="${booking.meetingRoom.roomName}"
+                    >Meeting Room A</strong
+                  >
+                  <small th:text="${booking.meetingRoom.location}"
+                    >Lantai 1</small
+                  >
+                </td>
+
+                <td th:text="${booking.bookerName}">Nama Pemesan</td>
+
+                <td th:text="${booking.agenda}">Agenda Meeting</td>
+
+                <td
+                  th:text="${booking.department != null ? booking.department : '-'}"
+                >
+                  IT
+                </td>
+
+                <td>
+                  <span
+                    class="status confirmed"
+                    th:if="${booking.status == 'CONFIRMED'}"
+                  >
+                    CONFIRMED
+                  </span>
+
+                  <span
+                    class="status completed"
+                    th:if="${booking.status == 'COMPLETED'}"
+                  >
+                    COMPLETED
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <footer>Meeting Room Booking System</footer>
+    </div>
+  </body>
+</html>
