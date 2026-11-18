@@ -4,153 +4,478 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Admin Dashboard - Meeting Room Booking</title>
+    <title>Meeting Room | Dashboard</title>
 
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+      :root {
+        --primary: #4f46e5;
+        --primary-light: #eef2ff;
+        --sidebar: #111827;
+        --sidebar-hover: #1f2937;
+        --bg: #f5f7fb;
+        --surface: #ffffff;
+        --text: #1e293b;
+        --muted: #8a94a6;
+        --border: #edf0f5;
+        --green: #16a34a;
+        --red: #ef4444;
+        --orange: #f59e0b;
+        --radius: 16px;
+      }
+
       * {
         box-sizing: border-box;
       }
 
       body {
         margin: 0;
-        font-family: Arial, sans-serif;
-        background: #f4f6fb;
-        color: #1e293b;
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Inter", sans-serif;
       }
 
+      /* ================= SIDEBAR ================= */
+
       .sidebar {
+        width: 250px;
         position: fixed;
         top: 0;
         left: 0;
         bottom: 0;
-        width: 245px;
-        padding: 28px 20px;
-        background: #172554;
-        color: white;
+        background: var(--sidebar);
+        padding: 28px 18px;
+        display: flex;
+        flex-direction: column;
+        z-index: 100;
       }
 
       .brand {
-        font-size: 20px;
-        font-weight: bold;
-        margin-bottom: 40px;
-        line-height: 1.5;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 10px;
+        margin-bottom: 38px;
       }
 
-      .menu-label {
-        color: #94a3b8;
-        font-size: 11px;
-        text-transform: uppercase;
-        margin-bottom: 15px;
-      }
-
-      .menu-item {
-        display: block;
-        padding: 13px 15px;
-        margin-bottom: 8px;
-        color: #cbd5e1;
-        text-decoration: none;
-        border-radius: 8px;
-        font-size: 14px;
-      }
-
-      .menu-item.active,
-      .menu-item:hover {
-        background: #2563eb;
+      .brand-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 13px;
+        background: linear-gradient(135deg, #6366f1, #3b82f6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 21px;
         color: white;
       }
 
+      .brand-text {
+        color: white;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1.5;
+      }
+
+      .brand-text span {
+        display: block;
+        color: #9ca3af;
+        font-size: 11px;
+        font-weight: 400;
+      }
+
+      .menu-label {
+        padding: 0 12px;
+        margin: 0 0 12px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1.4px;
+        color: #6b7280;
+        text-transform: uppercase;
+      }
+
+      .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        margin-bottom: 5px;
+        color: #9ca3af;
+        text-decoration: none;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 500;
+        transition: 0.2s;
+      }
+
+      .menu-icon {
+        width: 20px;
+        text-align: center;
+        font-size: 16px;
+      }
+
+      .menu-item:hover {
+        background: var(--sidebar-hover);
+        color: white;
+      }
+
+      .menu-item.active {
+        background: #3730a3;
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+      }
+
+      .sidebar-bottom {
+        margin-top: auto;
+      }
+
+      .sidebar-divider {
+        height: 1px;
+        background: #263244;
+        margin: 20px 0;
+      }
+
+      .profile {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        border-radius: 12px;
+        background: #1f2937;
+        margin-bottom: 12px;
+      }
+
+      .profile-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: #374151;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .profile-info {
+        flex: 1;
+      }
+
+      .profile-info strong {
+        display: block;
+        color: #f9fafb;
+        font-size: 12px;
+      }
+
+      .profile-info span {
+        font-size: 10px;
+        color: #9ca3af;
+      }
+
+      .logout-button {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        padding: 12px 14px;
+        border: none;
+        background: transparent;
+        color: #9ca3af;
+        border-radius: 10px;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 13px;
+        transition: 0.2s;
+      }
+
+      .logout-button:hover {
+        background: #3b1d26;
+        color: #f87171;
+      }
+
+      /* ================= MAIN ================= */
+
       .main {
-        margin-left: 245px;
-        padding: 30px;
+        margin-left: 250px;
+        min-height: 100vh;
+        padding: 35px 42px;
       }
 
       .topbar {
         display: flex;
-        align-items: center;
         justify-content: space-between;
-        gap: 15px;
-        margin-bottom: 30px;
+        align-items: center;
+        margin-bottom: 32px;
       }
 
-      .topbar h1 {
-        margin: 0 0 7px;
-        font-size: 26px;
+      .page-title h1 {
+        margin: 0;
+        font-size: 25px;
+        font-weight: 700;
+        letter-spacing: -0.7px;
       }
 
-      .subtitle {
-        color: #64748b;
-        font-size: 14px;
-      }
-
-      .logout-button {
-        padding: 10px 17px;
-        border: 0;
-        border-radius: 8px;
-        background: #fee2e2;
-        color: #b91c1c;
-        font-weight: bold;
-        cursor: pointer;
-      }
-
-      .stats {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 18px;
-        margin-bottom: 28px;
-      }
-
-      .stat-card {
-        padding: 22px;
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
-      }
-
-      .stat-label {
-        color: #64748b;
+      .page-title p {
+        margin: 8px 0 0;
+        color: var(--muted);
         font-size: 13px;
       }
 
-      .stat-number {
-        margin-top: 12px;
-        font-size: 30px;
-        font-weight: bold;
+      .date-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 15px;
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        color: #475569;
+        font-size: 12px;
+        font-weight: 600;
       }
 
-      .blue {
-        color: #2563eb;
+      .date-icon {
+        font-size: 16px;
       }
 
-      .green {
+      /* ================= WELCOME BANNER ================= */
+
+      .welcome-banner {
+        position: relative;
+        overflow: hidden;
+        padding: 27px 30px;
+        border-radius: 18px;
+        background: linear-gradient(
+          115deg,
+          #4338ca 0%,
+          #6366f1 65%,
+          #818cf8 100%
+        );
+        color: white;
+        margin-bottom: 30px;
+      }
+
+      .welcome-banner::after {
+        content: "";
+        position: absolute;
+        width: 230px;
+        height: 230px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+        top: -100px;
+        right: -30px;
+      }
+
+      .welcome-banner::before {
+        content: "";
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.06);
+        bottom: -90px;
+        right: 130px;
+      }
+
+      .welcome-banner h2 {
+        margin: 0;
+        font-size: 21px;
+        font-weight: 700;
+        position: relative;
+        z-index: 1;
+      }
+
+      .welcome-banner p {
+        margin: 9px 0 0;
+        font-size: 12px;
+        color: #e0e7ff;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ================= SECTION ================= */
+
+      .section-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 17px;
+      }
+
+      .section-heading h2 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 700;
+      }
+
+      .section-heading p {
+        margin: 5px 0 0;
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      /* ================= STATS ================= */
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 17px;
+        margin-bottom: 30px;
+      }
+
+      .stat-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.04);
+      }
+
+      .stat-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 19px;
+      }
+
+      .stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+      }
+
+      .icon-blue {
+        background: #eef2ff;
+        color: #4f46e5;
+      }
+
+      .icon-green {
+        background: #ecfdf5;
         color: #16a34a;
       }
 
-      .red {
-        color: #dc2626;
+      .icon-red {
+        background: #fef2f2;
+        color: #ef4444;
       }
 
-      .purple {
+      .icon-purple {
+        background: #f5f3ff;
         color: #7c3aed;
       }
 
+      .stat-label {
+        color: #8b95a7;
+        font-size: 11px;
+        font-weight: 500;
+      }
+
+      .stat-value {
+        font-size: 27px;
+        font-weight: 800;
+        letter-spacing: -1px;
+        margin-bottom: 7px;
+        color: #1e293b;
+      }
+
+      .stat-foot {
+        color: #9ca3af;
+        font-size: 10px;
+      }
+
+      /* ================= TODAY ================= */
+
+      .today-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 17px;
+        margin-bottom: 30px;
+      }
+
+      .today-card {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px;
+      }
+
+      .today-card-label {
+        font-size: 11px;
+        color: var(--muted);
+        margin-bottom: 14px;
+      }
+
+      .today-card-value {
+        font-size: 26px;
+        font-weight: 800;
+        letter-spacing: -0.8px;
+      }
+
+      .today-card-desc {
+        font-size: 10px;
+        color: #9ca3af;
+        margin-top: 7px;
+      }
+
+      .next-meeting-room {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 8px;
+      }
+
+      /* ================= PANELS ================= */
+
       .panel {
         background: white;
-        border-radius: 12px;
-        padding: 24px;
-        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        margin-bottom: 25px;
+        overflow: hidden;
       }
 
       .panel-header {
         display: flex;
-        align-items: center;
         justify-content: space-between;
-        margin-bottom: 20px;
+        align-items: center;
+        padding: 22px 24px;
+        border-bottom: 1px solid var(--border);
       }
 
       .panel-header h2 {
         margin: 0;
-        font-size: 18px;
+        font-size: 14px;
+        font-weight: 700;
       }
+
+      .panel-header p {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .meeting-count {
+        background: #eef2ff;
+        color: #4f46e5;
+        padding: 8px 12px;
+        border-radius: 9px;
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      /* ================= TABLE ================= */
 
       .table-wrapper {
         overflow-x: auto;
@@ -162,300 +487,546 @@
         white-space: nowrap;
       }
 
+      th {
+        background: #fafbfc;
+        color: #8b95a7;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+      }
+
       th,
       td {
-        padding: 14px 12px;
-        border-bottom: 1px solid #e2e8f0;
+        padding: 15px 20px;
         text-align: left;
-        font-size: 13px;
+        border-bottom: 1px solid #f0f2f6;
       }
 
-      th {
-        color: #64748b;
-        background: #f8fafc;
-      }
-
-      .status {
-        display: inline-block;
-        padding: 6px 10px;
-        border-radius: 20px;
+      td {
         font-size: 11px;
-        font-weight: bold;
+        color: #475569;
       }
 
-      .status-confirmed {
-        background: #dcfce7;
-        color: #166534;
+      tbody tr {
+        transition: background 0.15s;
       }
 
-      .status-cancelled {
-        background: #fee2e2;
-        color: #991b1b;
+      tbody tr:hover {
+        background: #fafbff;
       }
 
-      .status-completed {
-        background: #e0e7ff;
-        color: #3730a3;
+      tbody tr:last-child td {
+        border-bottom: none;
       }
+
+      .time-cell {
+        color: #334155;
+        font-weight: 600;
+      }
+
+      .room-cell {
+        color: #334155;
+        font-weight: 600;
+      }
+
+      .agenda-cell {
+        max-width: 220px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* ================= BADGES ================= */
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 30px;
+        font-size: 10px;
+        font-weight: 600;
+      }
+
+      .badge-upcoming {
+        background: #eff6ff;
+        color: #2563eb;
+      }
+
+      .badge-ongoing {
+        background: #ecfdf5;
+        color: #15803d;
+      }
+
+      .badge-finished {
+        background: #f1f5f9;
+        color: #64748b;
+      }
+
+      .badge-confirmed {
+        background: #ecfdf5;
+        color: #15803d;
+      }
+
+      .badge-cancelled {
+        background: #fef2f2;
+        color: #dc2626;
+      }
+
+      .badge-completed {
+        background: #eef2ff;
+        color: #4f46e5;
+      }
+
+      .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+
+      /* ================= EMPTY ================= */
 
       .empty {
-        padding: 35px;
+        padding: 45px 20px !important;
         text-align: center;
-        color: #64748b;
+        color: #9ca3af;
+        font-size: 12px;
       }
 
-      @media (max-width: 1050px) {
-        .stats {
-          grid-template-columns: repeat(2, 1fr);
+      .empty-icon {
+        font-size: 25px;
+        display: block;
+        margin-bottom: 10px;
+      }
+
+      /* ================= FOOTER ================= */
+
+      .footer {
+        text-align: center;
+        color: #a0a8b7;
+        font-size: 10px;
+        padding: 10px 0 20px;
+      }
+
+      /* ================= RESPONSIVE ================= */
+
+      @media (max-width: 1250px) {
+        .stats,
+        .today-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .main {
+          padding: 28px;
         }
       }
 
-      @media (max-width: 700px) {
+      @media (max-width: 850px) {
         .sidebar {
-          position: static;
+          width: 220px;
+        }
+
+        .main {
+          margin-left: 220px;
+          padding: 22px;
+        }
+      }
+
+      @media (max-width: 650px) {
+        .sidebar {
+          position: relative;
           width: 100%;
+          height: auto;
           padding: 18px;
         }
 
         .brand {
-          margin-bottom: 18px;
+          margin-bottom: 22px;
+        }
+
+        .sidebar-bottom {
+          margin-top: 20px;
         }
 
         .main {
           margin-left: 0;
-          padding: 20px 15px;
+          padding: 20px 14px;
         }
 
-        .stats {
-          grid-template-columns: 1fr 1fr;
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 15px;
+        }
+
+        .page-title h1 {
+          font-size: 22px;
+        }
+
+        .welcome-banner {
+          padding: 23px;
+        }
+
+        .welcome-banner h2 {
+          font-size: 18px;
+        }
+
+        .stats,
+        .today-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: 10px;
         }
 
-        .stat-card {
-          padding: 16px;
+        .stat-card,
+        .today-card {
+          padding: 15px;
         }
 
-        .stat-number {
-          font-size: 25px;
+        .stat-value,
+        .today-card-value {
+          font-size: 23px;
         }
 
-        .topbar h1 {
-          font-size: 21px;
+        .panel-header {
+          padding: 17px;
+        }
+
+        th,
+        td {
+          padding: 13px 15px;
         }
       }
 
-      /* TODAY MONITORING */
-
-      .today-badge {
-        display: inline-block;
-        padding: 6px 10px;
-        border-radius: 20px;
-        font-size: 11px;
-        font-weight: bold;
-      }
-
-      .badge-upcoming {
-        background: #dbeafe;
-        color: #1d4ed8;
-      }
-
-      .badge-ongoing {
-        background: #dcfce7;
-        color: #166534;
-      }
-
-      .badge-finished {
-        background: #e2e8f0;
-        color: #475569;
-      }
-
-      .today-panel {
-        margin-bottom: 28px;
+      @media (max-width: 380px) {
+        .stats,
+        .today-grid {
+          grid-template-columns: 1fr;
+        }
       }
     </style>
   </head>
 
   <body>
+    <!-- ================= SIDEBAR ================= -->
+
     <aside class="sidebar">
       <div class="brand">
-        Meeting Room<br />
-        Booking System
-      </div>
+        <div class="brand-icon">▦</div>
 
-      <div class="menu-label">Main Menu</div>
-
-      <a th:href="@{/admin/dashboard}" class="menu-item active"> Dashboard </a>
-      <a th:href="@{/admin/rooms}" class="menu-item">Kelola Ruangan</a>
-      <a th:href="@{/admin/calendar}" class="menu-item"> Kalender Meeting </a>
-
-      <a href="#recent-bookings" class="menu-item"> Monitoring Booking </a>
-
-      <div class="menu-label" style="margin-top: 30px">Account</div>
-
-      <form th:action="@{/admin/logout}" method="post">
-        <button type="submit" class="logout-button">Logout</button>
-      </form>
-    </aside>
-
-    <main class="main">
-      <div class="topbar">
-        <div>
-          <h1>Dashboard</h1>
-
-          <div class="subtitle">
-            Ringkasan aktivitas pemesanan ruang meeting.
-          </div>
+        <div class="brand-text">
+          Meeting Room
+          <span>Management System</span>
         </div>
       </div>
 
-      <!-- STATISTICS -->
+      <div class="menu-label">Workspace</div>
+
+      <a th:href="@{/admin/dashboard}" class="menu-item active">
+        <span class="menu-icon">◫</span>
+        Dashboard
+      </a>
+
+      <a th:href="@{/admin/rooms}" class="menu-item">
+        <span class="menu-icon">▣</span>
+        Kelola Ruangan
+      </a>
+
+      <a th:href="@{/admin/calendar}" class="menu-item">
+        <span class="menu-icon">▦</span>
+        Kalender Meeting
+      </a>
+
+      <a th:href="@{/admin/timeline}" class="menu-item">
+        <span class="menu-icon">◷</span>
+        Timeline Ruangan
+      </a>
+
+      <a href="#recent-bookings" class="menu-item">
+        <span class="menu-icon">≡</span>
+        Riwayat Booking
+      </a>
+
+      <div class="sidebar-bottom">
+        <div class="sidebar-divider"></div>
+
+        <div class="profile">
+          <div class="profile-avatar">A</div>
+
+          <div class="profile-info">
+            <strong>Administrator</strong>
+            <span>Room Management</span>
+          </div>
+        </div>
+
+        <form th:action="@{/admin/logout}" method="post">
+          <button type="submit" class="logout-button">
+            <span class="menu-icon">↪</span>
+            Logout
+          </button>
+        </form>
+      </div>
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+
+    <main class="main">
+      <!-- HEADER -->
+
+      <header class="topbar">
+        <div class="page-title">
+          <h1>Dashboard</h1>
+          <p>Ringkasan aktivitas dan penggunaan meeting room.</p>
+        </div>
+
+        <div class="date-box">
+          <span class="date-icon">▦</span>
+          <span th:text="${formattedDate}">Hari ini</span>
+        </div>
+      </header>
+
+      <!-- WELCOME -->
+
+      <section class="welcome-banner">
+        <h2>Welcome to Meeting Room Dashboard 👋</h2>
+        <p>
+          Pantau jadwal meeting, aktivitas pemesanan, dan penggunaan ruangan
+          dalam satu tempat.
+        </p>
+      </section>
+
+      <!-- BOOKING STATISTICS -->
+
+      <div class="section-heading">
+        <div>
+          <h2>Overview</h2>
+          <p>Ringkasan seluruh aktivitas pemesanan</p>
+        </div>
+      </div>
 
       <section class="stats">
         <div class="stat-card">
-          <div class="stat-label">Total Booking</div>
+          <div class="stat-top">
+            <span class="stat-label">Total Booking</span>
+            <div class="stat-icon icon-blue">▤</div>
+          </div>
 
-          <div class="stat-number blue" th:text="${totalBookings}">0</div>
+          <div
+            class="stat-value"
+            th:text="${totalBookings != null ? totalBookings : 0}"
+          >
+            0
+          </div>
+
+          <div class="stat-foot">Seluruh data booking</div>
         </div>
 
         <div class="stat-card">
-          <div class="stat-label">Booking Confirmed</div>
+          <div class="stat-top">
+            <span class="stat-label">Confirmed</span>
+            <div class="stat-icon icon-green">✓</div>
+          </div>
 
-          <div class="stat-number green" th:text="${confirmedBookings}">0</div>
+          <div
+            class="stat-value"
+            th:text="${confirmedBookings != null ? confirmedBookings : 0}"
+          >
+            0
+          </div>
+
+          <div class="stat-foot">Booking terkonfirmasi</div>
         </div>
 
         <div class="stat-card">
-          <div class="stat-label">Booking Cancelled</div>
+          <div class="stat-top">
+            <span class="stat-label">Cancelled</span>
+            <div class="stat-icon icon-red">×</div>
+          </div>
 
-          <div class="stat-number red" th:text="${cancelledBookings}">0</div>
+          <div
+            class="stat-value"
+            th:text="${cancelledBookings != null ? cancelledBookings : 0}"
+          >
+            0
+          </div>
+
+          <div class="stat-foot">Booking dibatalkan</div>
         </div>
 
         <div class="stat-card">
-          <div class="stat-label">Ruangan Aktif</div>
+          <div class="stat-top">
+            <span class="stat-label">Active Rooms</span>
+            <div class="stat-icon icon-purple">▣</div>
+          </div>
 
-          <div class="stat-number purple" th:text="${activeRooms}">0</div>
+          <div
+            class="stat-value"
+            th:text="${activeRooms != null ? activeRooms : 0}"
+          >
+            0
+          </div>
+
+          <div class="stat-foot">Ruangan yang aktif</div>
         </div>
       </section>
 
-      <!-- MONITORING STATISTICS -->
+      <!-- TODAY STATISTICS -->
 
-      <section class="stats">
-        <div class="stat-card">
-          <div class="stat-label">Booking Hari Ini</div>
-          <div class="stat-number blue" th:text="${todayBookingCount}">0</div>
+      <div class="section-heading">
+        <div>
+          <h2>Today's Activity</h2>
+          <p>Informasi meeting yang berlangsung hari ini</p>
         </div>
+      </div>
 
-        <div class="stat-card">
-          <div class="stat-label">Sedang Meeting</div>
-          <div class="stat-number green" th:text="${ongoingMeetingCount}">
-            0
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-label">Ruangan Terpakai</div>
-          <div class="stat-number purple" th:text="${occupiedRoomCount}">0</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-label">Meeting Berikutnya</div>
+      <section class="today-grid">
+        <div class="today-card">
+          <div class="today-card-label">Meeting Hari Ini</div>
 
           <div
-            class="stat-number blue"
-            style="font-size: 20px"
+            class="today-card-value"
+            th:text="${todayBookingCount != null ? todayBookingCount : 0}"
+          >
+            0
+          </div>
+
+          <div class="today-card-desc">Total jadwal hari ini</div>
+        </div>
+
+        <div class="today-card">
+          <div class="today-card-label">Sedang Berlangsung</div>
+
+          <div
+            class="today-card-value"
+            style="color: #16a34a"
+            th:text="${ongoingMeetingCount != null ? ongoingMeetingCount : 0}"
+          >
+            0
+          </div>
+
+          <div class="today-card-desc">Meeting aktif sekarang</div>
+        </div>
+
+        <div class="today-card">
+          <div class="today-card-label">Ruangan Terpakai</div>
+
+          <div
+            class="today-card-value"
+            style="color: #7c3aed"
+            th:text="${occupiedRoomCount != null ? occupiedRoomCount : 0}"
+          >
+            0
+          </div>
+
+          <div class="today-card-desc">Ruangan sedang digunakan</div>
+        </div>
+
+        <div class="today-card">
+          <div class="today-card-label">Meeting Berikutnya</div>
+
+          <div
+            class="today-card-value"
+            style="color: #4f46e5"
             th:text="${nextMeeting != null
-           ? #temporals.format(nextMeeting.startTime, 'HH:mm')
-           : '-'}"
+                    ? #temporals.format(nextMeeting.startTime, 'HH:mm')
+                    : '-'}"
           >
             -
           </div>
 
           <div
-            class="subtitle"
+            class="next-meeting-room"
             th:if="${nextMeeting != null}"
             th:text="${nextMeeting.meetingRoom.roomName}"
           ></div>
+
+          <div class="today-card-desc" th:if="${nextMeeting == null}">
+            Tidak ada jadwal berikutnya
+          </div>
         </div>
       </section>
 
-      <!-- TODAY MONITORING -->
+      <!-- TODAY MEETING TABLE -->
 
-      <!-- TODAY MONITORING -->
-
-      <section class="panel today-panel">
+      <section class="panel">
         <div class="panel-header">
           <div>
-            <h2>Monitoring Meeting Hari Ini</h2>
-            <div class="subtitle" th:text="${formattedDate}"></div>
+            <h2>Meeting Schedule</h2>
+            <p>Daftar meeting yang dijadwalkan hari ini</p>
           </div>
 
-          <span class="status status-confirmed">
-            <span th:text="${todayBookings.size()}"></span>
-            Meeting
-          </span>
+          <div class="meeting-count">
+            <span th:text="${todayBookings != null ? todayBookings.size() : 0}"
+              >0</span
+            >
+            Meetings
+          </div>
         </div>
 
         <div class="table-wrapper">
           <table>
             <thead>
               <tr>
-                <th>Waktu</th>
-                <th>Ruangan</th>
+                <th>Time</th>
+                <th>Room</th>
                 <th>Agenda</th>
-                <th>Pemesan</th>
-                <th>Departemen</th>
-                <th>Status Meeting</th>
+                <th>Booker</th>
+                <th>Department</th>
+                <th>Status</th>
               </tr>
             </thead>
 
             <tbody>
               <tr th:each="booking : ${todayBookings}">
-                <td>
-                  <strong
-                    th:text="${#temporals.format(booking.startTime, 'HH:mm')}
-                + ' - '
-                + ${#temporals.format(booking.endTime, 'HH:mm')}"
-                  ></strong>
-                </td>
+                <td
+                  class="time-cell"
+                  th:text="${#temporals.format(booking.startTime, 'HH:mm') + ' - ' + #temporals.format(booking.endTime, 'HH:mm')}"
+                ></td>
 
-                <td th:text="${booking.meetingRoom.roomName}"></td>
+                <td
+                  class="room-cell"
+                  th:text="${booking.meetingRoom.roomName}"
+                ></td>
 
-                <td th:text="${booking.agenda}"></td>
+                <td class="agenda-cell" th:text="${booking.agenda}"></td>
 
                 <td th:text="${booking.bookerName}"></td>
 
                 <td th:text="${booking.department}"></td>
 
                 <td>
-                  <!-- Akan Datang -->
                   <span
-                    class="today-badge badge-upcoming"
+                    class="badge badge-upcoming"
                     th:if="${booking.startTime.isAfter(now)}"
                   >
-                    Akan Datang
+                    <span class="status-dot"></span>
+                    Upcoming
                   </span>
 
-                  <!-- Sedang Meeting -->
                   <span
-                    class="today-badge badge-ongoing"
-                    th:if="${!booking.startTime.isAfter(now)
-                    and booking.endTime.isAfter(now)}"
+                    class="badge badge-ongoing"
+                    th:if="${!booking.startTime.isAfter(now) and booking.endTime.isAfter(now)}"
                   >
-                    Sedang Meeting
+                    <span class="status-dot"></span>
+                    In Progress
                   </span>
 
-                  <!-- Selesai -->
                   <span
-                    class="today-badge badge-finished"
+                    class="badge badge-finished"
                     th:if="${!booking.endTime.isAfter(now)}"
                   >
-                    Selesai
+                    <span class="status-dot"></span>
+                    Finished
                   </span>
                 </td>
               </tr>
 
-              <tr th:if="${#lists.isEmpty(todayBookings)}">
+              <tr
+                th:if="${todayBookings == null or #lists.isEmpty(todayBookings)}"
+              >
                 <td colspan="6" class="empty">
-                  Tidak ada meeting terjadwal hari ini.
+                  <span class="empty-icon">◷</span>
+                  Belum ada meeting terjadwal hari ini.
                 </td>
               </tr>
             </tbody>
@@ -467,60 +1038,78 @@
 
       <section class="panel" id="recent-bookings">
         <div class="panel-header">
-          <h2>Booking Terbaru</h2>
+          <div>
+            <h2>Recent Bookings</h2>
+            <p>Aktivitas booking terbaru yang masuk ke sistem</p>
+          </div>
         </div>
 
         <div class="table-wrapper">
           <table>
             <thead>
               <tr>
-                <th>Kode Booking</th>
-                <th>Nama Pemesan</th>
-                <th>Ruangan</th>
+                <th>Booking ID</th>
+                <th>Booker</th>
+                <th>Room</th>
                 <th>Agenda</th>
-                <th>Waktu Mulai</th>
-                <th>Waktu Selesai</th>
+                <th>Start</th>
+                <th>End</th>
                 <th>Status</th>
               </tr>
             </thead>
 
             <tbody>
               <tr th:each="booking : ${recentBookings}">
-                <td th:text="${booking.bookingCode}"></td>
+                <td
+                  style="font-weight: 600; color: #4f46e5"
+                  th:text="${booking.bookingCode}"
+                ></td>
 
                 <td th:text="${booking.bookerName}"></td>
 
-                <td th:text="${booking.meetingRoom.roomName}"></td>
+                <td
+                  class="room-cell"
+                  th:text="${booking.meetingRoom.roomName}"
+                ></td>
 
-                <td th:text="${booking.agenda}"></td>
+                <td class="agenda-cell" th:text="${booking.agenda}"></td>
 
                 <td
-                  th:text="${#temporals.format(booking.startTime, 'dd-MM-yyyy HH:mm')}"
+                  th:text="${#temporals.format(booking.startTime, 'dd MMM yyyy, HH:mm')}"
                 ></td>
 
                 <td
-                  th:text="${#temporals.format(booking.endTime, 'dd-MM-yyyy HH:mm')}"
+                  th:text="${#temporals.format(booking.endTime, 'dd MMM yyyy, HH:mm')}"
                 ></td>
 
                 <td>
                   <span
-                    class="status"
-                    th:classappend="${booking.status == 'CONFIRMED' ? ' status-confirmed' :
-                                                   booking.status == 'CANCELLED' ? ' status-cancelled' :
-                                                   ' status-completed'}"
+                    class="badge"
+                    th:classappend="${booking.status == 'CONFIRMED'
+                                    ? ' badge-confirmed'
+                                    : booking.status == 'CANCELLED'
+                                    ? ' badge-cancelled'
+                                    : ' badge-completed'}"
                     th:text="${booking.status}"
                   >
                   </span>
                 </td>
               </tr>
 
-              <tr th:if="${#lists.isEmpty(recentBookings)}">
-                <td colspan="7" class="empty">Belum ada data booking.</td>
+              <tr
+                th:if="${recentBookings == null or #lists.isEmpty(recentBookings)}"
+              >
+                <td colspan="7" class="empty">
+                  <span class="empty-icon">▤</span>
+                  Belum ada data booking.
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
       </section>
+
+      <footer class="footer">Meeting Room Management System</footer>
     </main>
   </body>
 </html>

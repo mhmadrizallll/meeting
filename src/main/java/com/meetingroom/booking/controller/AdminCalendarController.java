@@ -2,7 +2,9 @@
 package com.meetingroom.booking.controller;
 
 import com.meetingroom.booking.entity.Booking;
+import com.meetingroom.booking.entity.MeetingRoom;
 import com.meetingroom.booking.service.BookingService;
+import com.meetingroom.booking.service.MeetingRoomService;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -25,9 +27,13 @@ import java.util.Map;
 public class AdminCalendarController {
 
     private final BookingService bookingService;
+    private final MeetingRoomService meetingRoomService;
 
-    public AdminCalendarController(BookingService bookingService) {
+    public AdminCalendarController(
+            BookingService bookingService,
+            MeetingRoomService meetingRoomService) {
         this.bookingService = bookingService;
+        this.meetingRoomService = meetingRoomService;
     }
 
     @GetMapping
@@ -35,31 +41,48 @@ public class AdminCalendarController {
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             LocalDate date,
+
+            @RequestParam(required = false)
+            Long roomId,
+
             Model model) {
 
-        // Jika tanggal tidak dipilih, gunakan hari ini
+        // Tanggal kalender
         LocalDate selectedDate = date != null
                 ? date
                 : LocalDate.now();
 
-        // Awal minggu adalah hari Senin
+        // Awal minggu: Senin
         LocalDate weekStart = selectedDate.with(
                 DayOfWeek.MONDAY
         );
 
-        // Akhir minggu adalah Senin berikutnya
         LocalDate weekEnd = weekStart.plusWeeks(1);
 
         LocalDateTime startDateTime = weekStart.atStartOfDay();
         LocalDateTime endDateTime = weekEnd.atStartOfDay();
 
-        // Ambil seluruh booking pada minggu tersebut
+        // Ambil booking selama satu minggu
         List<Booking> bookings = bookingService.getBookingsByWeek(
                 startDateTime,
                 endDateTime
         );
 
-        // Siapkan daftar tujuh hari
+        // Filter berdasarkan ruangan
+        if (roomId != null) {
+            bookings = bookings.stream()
+                    .filter(booking ->
+                            booking.getMeetingRoom() != null
+                            && booking.getMeetingRoom().getRoomId()
+                                    .equals(roomId))
+                    .toList();
+        }
+
+        // Ambil daftar ruangan untuk dropdown
+        List<MeetingRoom> rooms =
+                meetingRoomService.getAllRooms();
+
+        // Siapkan 7 hari kalender
         List<LocalDate> weekDays = new ArrayList<>();
 
         Map<LocalDate, List<Booking>> bookingsByDay =
@@ -73,13 +96,14 @@ public class AdminCalendarController {
             bookingsByDay.put(day, new ArrayList<>());
         }
 
-        // Masukkan booking ke setiap hari yang bersinggungan
+        // Masukkan booking ke hari yang sesuai
         for (Booking booking : bookings) {
 
             for (LocalDate day : weekDays) {
 
                 LocalDateTime dayStart = day.atStartOfDay();
-                LocalDateTime dayEnd = day.plusDays(1).atStartOfDay();
+                LocalDateTime dayEnd =
+                        day.plusDays(1).atStartOfDay();
 
                 boolean overlaps =
                         booking.getStartTime().isBefore(dayEnd)
@@ -98,6 +122,9 @@ public class AdminCalendarController {
         model.addAttribute("bookingsByDay", bookingsByDay);
         model.addAttribute("bookings", bookings);
 
+        model.addAttribute("rooms", rooms);
+        model.addAttribute("selectedRoomId", roomId);
+
         model.addAttribute("weekStart", weekStart);
         model.addAttribute("weekEnd", weekEnd.minusDays(1));
 
@@ -108,7 +135,6 @@ public class AdminCalendarController {
                         + weekEnd.minusDays(1).format(formatter)
         );
 
-        // Navigasi minggu sebelumnya dan berikutnya
         model.addAttribute(
                 "previousWeek",
                 weekStart.minusWeeks(1)

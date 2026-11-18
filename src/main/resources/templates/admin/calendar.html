@@ -5,481 +5,939 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Kalender Meeting - Admin</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
       * {
         box-sizing: border-box;
       }
 
-      body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #f4f6fb;
-        color: #1e293b;
+      :root {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --sidebar: #111827;
+        --sidebar-muted: #9ca3af;
+        --background: #f5f6fa;
+        --surface: #ffffff;
+        --text: #111827;
+        --muted: #6b7280;
+        --border: #e5e7eb;
+        --green: #16a34a;
+        --blue: #2563eb;
+        --gray: #64748b;
       }
 
+      body {
+        margin: 0;
+        font-family: "Inter", sans-serif;
+        background: var(--background);
+        color: var(--text);
+      }
+
+      a {
+        text-decoration: none;
+      }
+
+      /* SIDEBAR */
       .sidebar {
         position: fixed;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        width: 245px;
-        padding: 28px 20px;
-        background: #172554;
+        inset: 0 auto 0 0;
+        width: 255px;
+        padding: 28px 18px;
+        background: var(--sidebar);
         color: white;
-        z-index: 10;
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
       }
 
       .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 10px;
+        margin-bottom: 42px;
+      }
+
+      .brand-icon {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 13px;
+        background: linear-gradient(135deg, #818cf8, #4f46e5);
         font-size: 20px;
-        font-weight: bold;
+        flex-shrink: 0;
+      }
+
+      .brand-name {
+        font-size: 14px;
         line-height: 1.5;
-        margin-bottom: 40px;
+        font-weight: 700;
+      }
+
+      .brand-name span {
+        display: block;
+        color: #9ca3af;
+        font-size: 11px;
+        font-weight: 400;
       }
 
       .menu-label {
-        color: #94a3b8;
-        font-size: 11px;
+        padding: 0 12px;
+        margin: 0 0 12px;
+        color: #6b7280;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1.2px;
         text-transform: uppercase;
-        margin-bottom: 15px;
       }
 
       .menu-item {
-        display: block;
-        padding: 13px 15px;
-        margin-bottom: 8px;
-        color: #cbd5e1;
-        text-decoration: none;
-        border-radius: 8px;
-        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        margin-bottom: 5px;
+        color: #9ca3af;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 500;
+        transition: 0.2s;
       }
 
-      .menu-item:hover,
+      .menu-icon {
+        width: 20px;
+        text-align: center;
+        font-size: 16px;
+      }
+
+      .menu-item:hover {
+        color: white;
+        background: #1f2937;
+      }
+
       .menu-item.active {
-        background: #2563eb;
+        color: white;
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
+        box-shadow: 0 5px 15px rgba(79, 70, 229, 0.25);
+      }
+
+      .sidebar-bottom {
+        margin-top: auto;
+      }
+
+      .logout-button {
+        width: 100%;
+        padding: 12px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border: 1px solid #374151;
+        border-radius: 10px;
+        background: transparent;
+        color: #d1d5db;
+        font-family: inherit;
+        font-size: 13px;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      .logout-button:hover {
+        background: #374151;
         color: white;
       }
 
+      /* MAIN */
       .main {
-        margin-left: 245px;
-        padding: 30px;
+        margin-left: 255px;
+        min-height: 100vh;
+        padding: 34px;
       }
 
       .topbar {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        margin-bottom: 25px;
+        justify-content: space-between;
+        margin-bottom: 28px;
       }
 
-      h1 {
+      .page-title {
         margin: 0 0 8px;
-        font-size: 26px;
+        font-size: 25px;
+        font-weight: 800;
+        letter-spacing: -0.7px;
       }
 
       .subtitle {
-        color: #64748b;
-        font-size: 14px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.6;
       }
 
-      .calendar-panel {
+      .page-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 13px;
+        border: 1px solid #e0e7ff;
+        border-radius: 30px;
+        background: #eef2ff;
+        color: #4f46e5;
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .page-badge-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #6366f1;
+      }
+
+      /* FILTER */
+      .filter-panel {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        flex-wrap: wrap;
+        gap: 18px;
+        padding: 20px 22px;
+        margin-bottom: 20px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 15px;
+        box-shadow: 0 3px 12px rgba(15, 23, 42, 0.025);
+      }
+
+      .filter-heading {
+        margin-bottom: 5px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .filter-description {
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .filter-form {
+        display: flex;
+        align-items: end;
+        flex-wrap: wrap;
+        gap: 9px;
+      }
+
+      .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        min-width: 220px;
+      }
+
+      .filter-label {
+        color: #4b5563;
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .filter-select {
+        height: 40px;
+        padding: 0 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 9px;
+        outline: none;
         background: white;
+        color: #374151;
+        font-family: inherit;
+        font-size: 12px;
+      }
+
+      .filter-select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+      }
+
+      .filter-button,
+      .reset-button {
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 15px;
+        border: none;
+        border-radius: 9px;
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      .filter-button {
+        background: var(--primary);
+        color: white;
+      }
+
+      .filter-button:hover {
+        background: var(--primary-dark);
+      }
+
+      .reset-button {
+        background: #f3f4f6;
+        color: #4b5563;
+      }
+
+      .reset-button:hover {
+        background: #e5e7eb;
+      }
+
+      /* CALENDAR */
+      .calendar-panel {
         padding: 24px;
-        border-radius: 14px;
-        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: 0 3px 15px rgba(15, 23, 42, 0.025);
       }
 
       .calendar-toolbar {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        gap: 15px;
+        justify-content: space-between;
         flex-wrap: wrap;
-        margin-bottom: 25px;
+        gap: 15px;
+        margin-bottom: 23px;
+      }
+
+      .calendar-heading {
+        margin-bottom: 5px;
+        font-size: 15px;
+        font-weight: 800;
+      }
+
+      .calendar-caption {
+        color: var(--muted);
+        font-size: 11px;
       }
 
       .week-navigation {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 9px;
         flex-wrap: wrap;
       }
 
-      .week-navigation h2 {
-        margin: 0;
-        font-size: 18px;
+      .week-label {
+        min-width: 170px;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 700;
       }
 
       .nav-button {
-        display: inline-block;
-        padding: 10px 14px;
-        background: #eff6ff;
-        color: #2563eb;
-        text-decoration: none;
-        border: none;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: bold;
-        cursor: pointer;
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 13px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: white;
+        color: #374151;
+        font-family: inherit;
+        font-size: 11px;
+        font-weight: 600;
+        transition: 0.2s;
       }
 
       .nav-button:hover {
-        background: #dbeafe;
+        background: #f3f4f6;
+        border-color: #c7d2fe;
       }
 
       .today-button {
-        background: #2563eb;
+        border-color: var(--primary);
+        background: var(--primary);
         color: white;
       }
 
       .today-button:hover {
-        background: #1d4ed8;
+        background: var(--primary-dark);
+        color: white;
       }
 
-      .week-grid {
-        display: grid;
-        grid-template-columns: repeat(7, minmax(150px, 1fr));
-        gap: 12px;
+      /* WEEK GRID */
+      .calendar-scroll {
+        width: 100%;
         overflow-x: auto;
         padding-bottom: 10px;
       }
 
+      .week-grid {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(155px, 1fr));
+        gap: 11px;
+        min-width: 1120px;
+      }
+
       .day-card {
-        min-height: 300px;
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 11px;
-        padding: 14px;
+        min-height: 340px;
+        padding: 13px;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        background: #fafbfc;
+        transition: 0.2s;
+      }
+
+      .day-card:hover {
+        border-color: #c7d2fe;
       }
 
       .day-card.today {
-        border: 2px solid #2563eb;
-        background: #eff6ff;
+        border: 1.5px solid #818cf8;
+        background: #f5f6ff;
       }
 
       .day-header {
         padding-bottom: 13px;
-        border-bottom: 1px solid #e2e8f0;
-        margin-bottom: 14px;
+        margin-bottom: 13px;
+        border-bottom: 1px solid #e5e7eb;
       }
 
       .day-name {
-        font-size: 13px;
-        color: #64748b;
-        font-weight: bold;
+        color: #6b7280;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
 
       .day-date {
-        margin-top: 6px;
-        font-size: 22px;
-        font-weight: bold;
+        margin-top: 7px;
+        font-size: 23px;
+        font-weight: 800;
+        letter-spacing: -0.8px;
       }
 
       .today-label {
-        display: inline-block;
-        margin-top: 6px;
+        display: inline-flex;
+        margin-top: 7px;
         padding: 4px 8px;
-        background: #dbeafe;
-        color: #1d4ed8;
         border-radius: 20px;
-        font-size: 10px;
-        font-weight: bold;
+        background: #e0e7ff;
+        color: #4338ca;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.4px;
       }
 
-      /* Kartu meeting yang bisa diklik */
+      /* MEETING CARD */
       .meeting-card {
         display: block;
         position: relative;
-        z-index: 1;
-        padding: 12px;
-        margin-bottom: 10px;
+        padding: 11px;
+        margin-bottom: 9px;
+        border: 1px solid #e5e7eb;
+        border-left: 3px solid var(--blue);
+        border-radius: 9px;
         background: white;
-        border-left: 4px solid #2563eb;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
-        text-decoration: none;
         color: inherit;
-        cursor: pointer;
-        transition: all 0.2s ease;
+        box-shadow: 0 2px 5px rgba(15, 23, 42, 0.025);
+        transition: 0.2s;
       }
 
       .meeting-card:hover {
-        transform: translateY(-3px);
-        border-left-color: #1d4ed8;
-        box-shadow: 0 6px 16px rgba(15, 23, 42, 0.1);
+        transform: translateY(-2px);
+        border-color: #c7d2fe;
+        border-left-color: var(--primary-dark);
+        box-shadow: 0 5px 13px rgba(15, 23, 42, 0.08);
       }
 
       .meeting-card:focus-visible {
-        outline: 3px solid #93c5fd;
-        outline-offset: 3px;
+        outline: 3px solid #a5b4fc;
+        outline-offset: 2px;
       }
 
       .meeting-time {
-        font-size: 12px;
-        font-weight: bold;
-        color: #2563eb;
         margin-bottom: 8px;
+        color: #4f46e5;
+        font-size: 10px;
+        font-weight: 800;
       }
 
       .meeting-title {
-        font-size: 13px;
-        font-weight: bold;
+        margin-bottom: 8px;
+        color: #111827;
+        font-size: 11px;
+        font-weight: 700;
         line-height: 1.5;
-        margin-bottom: 7px;
         overflow-wrap: anywhere;
       }
 
       .meeting-room,
       .meeting-person {
-        color: #64748b;
-        font-size: 11px;
-        line-height: 1.6;
+        display: flex;
+        align-items: flex-start;
+        gap: 5px;
+        margin-top: 5px;
+        color: #6b7280;
+        font-size: 10px;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
       }
 
       .meeting-status {
-        display: inline-block;
-        margin-top: 8px;
-        padding: 4px 7px;
+        display: inline-flex;
+        margin-top: 10px;
+        padding: 5px 8px;
         border-radius: 20px;
-        font-size: 10px;
-        font-weight: bold;
+        font-size: 9px;
+        font-weight: 700;
       }
 
       .upcoming {
-        background: #dbeafe;
-        color: #1d4ed8;
+        background: #eff6ff;
+        color: #2563eb;
       }
 
       .ongoing {
         background: #dcfce7;
-        color: #166534;
+        color: #15803d;
       }
 
       .finished {
-        background: #e2e8f0;
-        color: #475569;
+        background: #f3f4f6;
+        color: #6b7280;
       }
 
       .empty-day {
+        padding: 35px 5px;
+        color: #9ca3af;
         text-align: center;
-        padding: 25px 5px;
-        color: #94a3b8;
-        font-size: 12px;
+        font-size: 10px;
+        line-height: 1.7;
+      }
+
+      .empty-icon {
+        display: block;
+        margin-bottom: 7px;
+        font-size: 20px;
+        opacity: 0.6;
+      }
+
+      /* LEGEND */
+      .calendar-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        padding-top: 18px;
+        margin-top: 15px;
+        border-top: 1px solid #f1f5f9;
       }
 
       .legend {
         display: flex;
         flex-wrap: wrap;
         gap: 18px;
-        margin-top: 22px;
-        color: #64748b;
-        font-size: 12px;
       }
 
       .legend-item {
         display: flex;
         align-items: center;
         gap: 7px;
+        color: #6b7280;
+        font-size: 10px;
+        font-weight: 500;
       }
 
       .legend-dot {
-        width: 9px;
-        height: 9px;
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
+      }
+
+      .filter-info {
+        color: #6b7280;
+        font-size: 11px;
+      }
+
+      /* RESPONSIVE */
+      @media (max-width: 900px) {
+        .sidebar {
+          width: 220px;
+        }
+
+        .main {
+          margin-left: 220px;
+          padding: 25px 20px;
+        }
+
+        .filter-panel {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .filter-form {
+          width: 100%;
+        }
       }
 
       @media (max-width: 700px) {
         .sidebar {
-          position: static;
+          position: relative;
           width: 100%;
-          padding: 18px;
+          padding: 17px;
         }
 
         .brand {
-          margin-bottom: 18px;
+          margin-bottom: 20px;
+        }
+
+        .sidebar-bottom {
+          margin-top: 15px;
+        }
+
+        .menu-label {
+          margin-top: 15px;
         }
 
         .main {
           margin-left: 0;
-          padding: 20px 15px;
+          padding: 22px 15px;
         }
 
-        .topbar h1 {
-          font-size: 22px;
+        .topbar {
+          align-items: flex-start;
+        }
+
+        .page-title {
+          font-size: 21px;
+        }
+
+        .page-badge {
+          display: none;
+        }
+
+        .filter-form {
+          align-items: stretch;
+        }
+
+        .filter-group {
+          width: 100%;
+          min-width: 0;
+        }
+
+        .filter-button,
+        .reset-button {
+          flex: 1;
         }
 
         .calendar-panel {
           padding: 16px;
         }
 
-        .week-grid {
-          grid-template-columns: repeat(7, 180px);
+        .calendar-toolbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .week-navigation {
+          width: 100%;
+          justify-content: space-between;
+        }
+
+        .week-label {
+          min-width: 0;
+          flex: 1;
+          font-size: 11px;
+        }
+
+        .calendar-footer {
+          align-items: flex-start;
+          flex-direction: column;
         }
       }
     </style>
   </head>
 
   <body>
+    <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="brand">
-        Meeting Room<br />
-        Booking System
+        <div class="brand-icon">▦</div>
+        <div class="brand-name">
+          Meeting Room
+          <span>Booking Management System</span>
+        </div>
       </div>
 
       <div class="menu-label">Main Menu</div>
 
-      <a th:href="@{/admin/dashboard}" class="menu-item"> Dashboard </a>
+      <a th:href="@{/admin/dashboard}" class="menu-item">
+        <span class="menu-icon">▦</span>
+        Dashboard
+      </a>
 
-      <a th:href="@{/admin/rooms}" class="menu-item"> Kelola Ruangan </a>
+      <a th:href="@{/admin/rooms}" class="menu-item">
+        <span class="menu-icon">▣</span>
+        Kelola Ruangan
+      </a>
 
       <a th:href="@{/admin/calendar}" class="menu-item active">
+        <span class="menu-icon">▦</span>
         Kalender Meeting
       </a>
 
-      <a th:href="@{/admin/bookings}" class="menu-item"> Monitoring Booking </a>
+      <a th:href="@{/admin/bookings}" class="menu-item">
+        <span class="menu-icon">▤</span>
+        Monitoring Booking
+      </a>
 
-      <div class="menu-label" style="margin-top: 30px">Account</div>
+      <div class="sidebar-bottom">
+        <div class="menu-label">Account</div>
 
-      <form th:action="@{/admin/logout}" method="post">
-        <button type="submit" class="nav-button">Logout</button>
-      </form>
+        <form th:action="@{/admin/logout}" method="post">
+          <button type="submit" class="logout-button">
+            <span>↪</span>
+            Logout
+          </button>
+        </form>
+      </div>
     </aside>
 
+    <!-- MAIN CONTENT -->
     <main class="main">
-      <div class="topbar">
+      <header class="topbar">
         <div>
-          <h1>Kalender Meeting</h1>
-          <div class="subtitle">Jadwal pemakaian ruang meeting mingguan.</div>
+          <h1 class="page-title">Kalender Meeting</h1>
+          <div class="subtitle">
+            Pantau dan kelola jadwal penggunaan ruang meeting setiap minggu.
+          </div>
         </div>
-      </div>
 
+        <div class="page-badge">
+          <span class="page-badge-dot"></span>
+          Booking Calendar
+        </div>
+      </header>
+
+      <!-- FILTER RUANGAN -->
+      <section class="filter-panel">
+        <div>
+          <div class="filter-heading">Filter Kalender</div>
+          <div class="filter-description">
+            Pilih ruangan untuk melihat jadwal meeting tertentu.
+          </div>
+        </div>
+
+        <form th:action="@{/admin/calendar}" method="get" class="filter-form">
+          <input type="hidden" name="date" th:value="${selectedDate}" />
+
+          <div class="filter-group">
+            <label class="filter-label" for="roomId"> Pilih Ruangan </label>
+
+            <select id="roomId" name="roomId" class="filter-select">
+              <option value="" th:selected="${selectedRoomId == null}">
+                Semua Ruangan
+              </option>
+
+              <option
+                th:each="room : ${rooms}"
+                th:value="${room.roomId}"
+                th:text="${room.roomName}"
+                th:selected="${selectedRoomId != null
+                and selectedRoomId.equals(room.roomId)}"
+              >
+                Meeting Room A
+              </option>
+            </select>
+          </div>
+
+          <button type="submit" class="filter-button">Terapkan Filter</button>
+
+          <a
+            th:href="@{/admin/calendar(date=${selectedDate})}"
+            class="reset-button"
+          >
+            Reset
+          </a>
+        </form>
+      </section>
+
+      <!-- CALENDAR -->
       <section class="calendar-panel">
         <div class="calendar-toolbar">
+          <div>
+            <div class="calendar-heading">Weekly Schedule</div>
+            <div class="calendar-caption">
+              Ringkasan jadwal meeting selama satu minggu.
+            </div>
+          </div>
+
           <div class="week-navigation">
             <a
               class="nav-button"
-              th:href="@{/admin/calendar(date=${previousWeek})}"
+              th:href="@{/admin/calendar(date=${previousWeek},roomId=${selectedRoomId})}"
             >
-              &larr; Sebelumnya
+              ← Sebelumnya
             </a>
 
-            <h2 th:text="${weekLabel}">01 - 07 Januari 2026</h2>
+            <h2 class="week-label" th:text="${weekLabel}">
+              01 - 07 Januari 2026
+            </h2>
 
             <a
               class="nav-button"
-              th:href="@{/admin/calendar(date=${nextWeek})}"
+              th:href="@{/admin/calendar(date=${nextWeek},roomId=${selectedRoomId})}"
             >
-              Berikutnya &rarr;
+              Berikutnya →
             </a>
-          </div>
 
-          <a class="nav-button today-button" th:href="@{/admin/calendar}">
-            Hari Ini
-          </a>
-        </div>
-
-        <div class="week-grid">
-          <div
-            class="day-card"
-            th:each="day : ${weekDays}"
-            th:classappend="${day.equals(T(java.time.LocalDate).now()) ? ' today' : ''}"
-          >
-            <div class="day-header">
-              <div class="day-name" th:text="${#temporals.format(day, 'EEEE')}">
-                Senin
-              </div>
-
-              <div
-                class="day-date"
-                th:text="${#temporals.format(day, 'dd MMM')}"
-              >
-                01 Jan
-              </div>
-
-              <span
-                class="today-label"
-                th:if="${day.equals(T(java.time.LocalDate).now())}"
-              >
-                HARI INI
-              </span>
-            </div>
-
-            <div
-              th:if="${#lists.isEmpty(bookingsByDay.get(day))}"
-              class="empty-day"
-            >
-              Tidak ada meeting
-            </div>
-
-            <!-- KARTU MEETING: KLIK UNTUK DETAIL -->
             <a
-              th:each="booking : ${bookingsByDay.get(day)}"
-              th:href="@{/admin/bookings/{id}(id=${booking.bookingId})}"
-              class="meeting-card"
-              th:title="${'Lihat detail booking ' + booking.bookingCode}"
+              class="nav-button today-button"
+              th:href="@{/admin/calendar(roomId=${selectedRoomId})}"
             >
-              <div
-                class="meeting-time"
-                th:text="${#temporals.format(booking.startTime, 'HH:mm')
-                            + ' - '
-                            + #temporals.format(booking.endTime, 'HH:mm')}"
-              >
-                09:00 - 10:00
-              </div>
-
-              <div class="meeting-title" th:text="${booking.agenda}">
-                Agenda meeting
-              </div>
-
-              <div
-                class="meeting-room"
-                th:text="${booking.meetingRoom.roomName}"
-              >
-                Meeting Room A
-              </div>
-
-              <div class="meeting-person" th:text="${booking.bookerName}">
-                Nama pemesan
-              </div>
-
-              <span
-                class="meeting-status upcoming"
-                th:if="${booking.startTime.isAfter(T(java.time.LocalDateTime).now())}"
-              >
-                Akan Datang
-              </span>
-
-              <span
-                class="meeting-status ongoing"
-                th:if="${!booking.startTime.isAfter(T(java.time.LocalDateTime).now())
-                            and booking.endTime.isAfter(T(java.time.LocalDateTime).now())}"
-              >
-                Sedang Meeting
-              </span>
-
-              <span
-                class="meeting-status finished"
-                th:if="${!booking.endTime.isAfter(T(java.time.LocalDateTime).now())}"
-              >
-                Selesai
-              </span>
+              Hari Ini
             </a>
           </div>
         </div>
 
-        <div class="legend">
-          <div class="legend-item">
-            <span class="legend-dot" style="background: #2563eb"></span>
-            Akan Datang
+        <!-- WEEK GRID -->
+        <div class="calendar-scroll">
+          <div class="week-grid">
+            <div
+              class="day-card"
+              th:each="day : ${weekDays}"
+              th:classappend="${day.equals(T(java.time.LocalDate).now()) ? ' today' : ''}"
+            >
+              <div class="day-header">
+                <div
+                  class="day-name"
+                  th:text="${#temporals.format(day, 'EEEE')}"
+                >
+                  Senin
+                </div>
+
+                <div
+                  class="day-date"
+                  th:text="${#temporals.format(day, 'dd MMM')}"
+                >
+                  01 Jan
+                </div>
+
+                <span
+                  class="today-label"
+                  th:if="${day.equals(T(java.time.LocalDate).now())}"
+                >
+                  HARI INI
+                </span>
+              </div>
+
+              <!-- EMPTY STATE -->
+              <div
+                th:if="${#lists.isEmpty(bookingsByDay.get(day))}"
+                class="empty-day"
+              >
+                <span class="empty-icon">▦</span>
+                Tidak ada meeting
+              </div>
+
+              <!-- MEETING CARD -->
+              <a
+                th:each="booking : ${bookingsByDay.get(day)}"
+                th:href="@{/admin/bookings/{id}(id=${booking.bookingId})}"
+                class="meeting-card"
+                th:title="${'Lihat detail booking ' + booking.bookingCode}"
+              >
+                <div
+                  class="meeting-time"
+                  th:text="${#temporals.format(booking.startTime, 'HH:mm')
+                  + ' - '
+                  + #temporals.format(booking.endTime, 'HH:mm')}"
+                >
+                  09:00 - 10:00
+                </div>
+
+                <div class="meeting-title" th:text="${booking.agenda}">
+                  Agenda meeting
+                </div>
+
+                <div
+                  class="meeting-room"
+                  th:text="${'▣ ' + booking.meetingRoom.roomName}"
+                >
+                  ▣ Meeting Room A
+                </div>
+
+                <div
+                  class="meeting-person"
+                  th:text="${'♙ ' + booking.bookerName}"
+                >
+                  ♙ Nama pemesan
+                </div>
+
+                <span
+                  class="meeting-status upcoming"
+                  th:if="${booking.startTime.isAfter(T(java.time.LocalDateTime).now())}"
+                >
+                  Akan Datang
+                </span>
+
+                <span
+                  class="meeting-status ongoing"
+                  th:if="${!booking.startTime.isAfter(T(java.time.LocalDateTime).now())
+                  and booking.endTime.isAfter(T(java.time.LocalDateTime).now())}"
+                >
+                  Sedang Meeting
+                </span>
+
+                <span
+                  class="meeting-status finished"
+                  th:if="${!booking.endTime.isAfter(T(java.time.LocalDateTime).now())}"
+                >
+                  Selesai
+                </span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- FOOTER / LEGEND -->
+        <div class="calendar-footer">
+          <div class="legend">
+            <div class="legend-item">
+              <span class="legend-dot" style="background: #2563eb"></span>
+              Akan Datang
+            </div>
+
+            <div class="legend-item">
+              <span class="legend-dot" style="background: #16a34a"></span>
+              Sedang Meeting
+            </div>
+
+            <div class="legend-item">
+              <span class="legend-dot" style="background: #94a3b8"></span>
+              Selesai
+            </div>
           </div>
 
-          <div class="legend-item">
-            <span class="legend-dot" style="background: #16a34a"></span>
-            Sedang Meeting
-          </div>
+          <div class="filter-info">
+            <span th:if="${selectedRoomId == null}">
+              Menampilkan jadwal semua ruangan.
+            </span>
 
-          <div class="legend-item">
-            <span class="legend-dot" style="background: #94a3b8"></span>
-            Selesai
+            <span th:if="${selectedRoomId != null}">
+              Filter ruangan sedang aktif.
+            </span>
           </div>
         </div>
       </section>

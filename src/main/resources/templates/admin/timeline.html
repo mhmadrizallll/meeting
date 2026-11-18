@@ -1,0 +1,889 @@
+<!doctype html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Timeline Meeting - Admin</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --sidebar: #111827;
+        --background: #f5f6fa;
+        --surface: #ffffff;
+        --text: #111827;
+        --muted: #6b7280;
+        --border: #e5e7eb;
+        --blue: #2563eb;
+        --green: #16a34a;
+        --gray: #64748b;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Inter", sans-serif;
+        background: var(--background);
+        color: var(--text);
+      }
+
+      a {
+        text-decoration: none;
+      }
+
+      /* SIDEBAR */
+      .sidebar {
+        position: fixed;
+        inset: 0 auto 0 0;
+        width: 255px;
+        padding: 28px 18px;
+        background: var(--sidebar);
+        color: white;
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 10px;
+        margin-bottom: 42px;
+      }
+
+      .brand-icon {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 13px;
+        background: linear-gradient(135deg, #818cf8, #4f46e5);
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+
+      .brand-name {
+        font-size: 14px;
+        line-height: 1.5;
+        font-weight: 700;
+      }
+
+      .brand-name span {
+        display: block;
+        color: #9ca3af;
+        font-size: 11px;
+        font-weight: 400;
+      }
+
+      .menu-label {
+        padding: 0 12px;
+        margin: 0 0 12px;
+        color: #6b7280;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+      }
+
+      .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        margin-bottom: 5px;
+        color: #9ca3af;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 500;
+        transition: 0.2s;
+      }
+
+      .menu-icon {
+        width: 20px;
+        text-align: center;
+        font-size: 16px;
+      }
+
+      .menu-item:hover {
+        color: white;
+        background: #1f2937;
+      }
+
+      .menu-item.active {
+        color: white;
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
+        box-shadow: 0 5px 15px rgba(79, 70, 229, 0.25);
+      }
+
+      .sidebar-bottom {
+        margin-top: auto;
+      }
+
+      .logout-button {
+        width: 100%;
+        padding: 12px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border: 1px solid #374151;
+        border-radius: 10px;
+        background: transparent;
+        color: #d1d5db;
+        font-family: inherit;
+        font-size: 13px;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      .logout-button:hover {
+        background: #374151;
+        color: white;
+      }
+
+      /* MAIN */
+      .main {
+        margin-left: 255px;
+        min-height: 100vh;
+        padding: 34px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 28px;
+      }
+
+      .page-title {
+        margin: 0 0 8px;
+        font-size: 25px;
+        font-weight: 800;
+        letter-spacing: -0.7px;
+      }
+
+      .subtitle {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .page-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 13px;
+        border: 1px solid #e0e7ff;
+        border-radius: 30px;
+        background: #eef2ff;
+        color: #4f46e5;
+        font-size: 11px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      .page-badge-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #6366f1;
+      }
+
+      /* PANEL */
+      .panel {
+        padding: 24px;
+        margin-top: 20px;
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: 0 3px 15px rgba(15, 23, 42, 0.025);
+      }
+
+      .panel-heading {
+        margin-bottom: 5px;
+        font-size: 15px;
+        font-weight: 800;
+      }
+
+      .panel-description {
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.6;
+      }
+
+      /* FILTER */
+      .filter-form {
+        display: flex;
+        align-items: end;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 18px;
+        margin-bottom: 23px;
+        background: #fafbfc;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
+
+      .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        min-width: 220px;
+      }
+
+      .filter-group label {
+        color: #4b5563;
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .filter-select,
+      .filter-date {
+        height: 40px;
+        padding: 0 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 9px;
+        outline: none;
+        background: white;
+        color: #374151;
+        font-family: inherit;
+        font-size: 12px;
+      }
+
+      .filter-select:focus,
+      .filter-date:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+      }
+
+      .button {
+        min-height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 14px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        background: white;
+        color: #374151;
+        font-family: inherit;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+        white-space: nowrap;
+      }
+
+      .button:hover {
+        background: #f3f4f6;
+        border-color: #c7d2fe;
+      }
+
+      .button.primary {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: white;
+      }
+
+      .button.primary:hover {
+        border-color: var(--primary-dark);
+        background: var(--primary-dark);
+      }
+
+      /* DATE NAVIGATION */
+      .toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .date-navigation {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 9px;
+      }
+
+      .date-navigation h2 {
+        min-width: 190px;
+        margin: 0;
+        text-align: center;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .timeline-description {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 13px;
+        margin-bottom: 17px;
+        border: 1px solid #e0e7ff;
+        border-radius: 9px;
+        background: #f5f6ff;
+        color: #4f46e5;
+        font-size: 11px;
+        line-height: 1.6;
+      }
+
+      /* TIMELINE */
+      .timeline-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
+
+      .timeline {
+        min-width: 1050px;
+        background: white;
+      }
+
+      .timeline-header {
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        background: #f8fafc;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .room-header {
+        display: flex;
+        align-items: center;
+        padding: 17px;
+        border-right: 1px solid var(--border);
+        color: #374151;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .hours {
+        display: grid;
+        grid-template-columns: repeat(11, 1fr);
+      }
+
+      .hour {
+        position: relative;
+        padding: 17px 0;
+        border-left: 1px solid var(--border);
+        color: #6b7280;
+        text-align: center;
+        font-size: 10px;
+        font-weight: 600;
+      }
+
+      .timeline-row {
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        min-height: 112px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .timeline-row:last-child {
+        border-bottom: none;
+      }
+
+      .room-info {
+        padding: 19px 17px;
+        border-right: 1px solid var(--border);
+        background: #fafbfc;
+      }
+
+      .room-name {
+        margin-bottom: 7px;
+        color: #111827;
+        font-size: 12px;
+        font-weight: 800;
+        line-height: 1.5;
+      }
+
+      .room-location {
+        color: #6b7280;
+        font-size: 10px;
+      }
+
+      .room-capacity {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 8px;
+        margin-top: 9px;
+        border-radius: 6px;
+        background: #f3f4f6;
+        color: #6b7280;
+        font-size: 9px;
+        font-weight: 600;
+      }
+
+      .time-track {
+        position: relative;
+        min-height: 112px;
+        background-color: white;
+        background-image: linear-gradient(
+          to right,
+          #e5e7eb 1px,
+          transparent 1px
+        );
+        background-size: calc(100% / 11) 100%;
+      }
+
+      /* BOOKING BLOCK */
+      .booking-block {
+        position: absolute;
+        top: 19px;
+        height: 74px;
+        min-width: 4px;
+        padding: 10px;
+        overflow: hidden;
+        border: 1px solid #bfdbfe;
+        border-left: 4px solid var(--blue);
+        border-radius: 8px;
+        background: #eff6ff;
+        color: #1e40af;
+        text-decoration: none;
+        z-index: 2;
+        transition: 0.2s;
+      }
+
+      .booking-block:hover {
+        z-index: 5;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(15, 23, 42, 0.15);
+      }
+
+      .booking-block:focus-visible {
+        outline: 3px solid #a5b4fc;
+        outline-offset: 2px;
+      }
+
+      .booking-block.ongoing {
+        border-color: #bbf7d0;
+        border-left-color: var(--green);
+        background: #f0fdf4;
+        color: #166534;
+      }
+
+      .booking-block.finished {
+        border-color: #e2e8f0;
+        border-left-color: var(--gray);
+        background: #f1f5f9;
+        color: #475569;
+      }
+
+      .booking-time {
+        margin-bottom: 6px;
+        font-size: 10px;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+
+      .booking-title {
+        overflow: hidden;
+        color: inherit;
+        font-size: 11px;
+        font-weight: 700;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .booking-person {
+        margin-top: 5px;
+        overflow: hidden;
+        color: inherit;
+        font-size: 9px;
+        opacity: 0.8;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      /* EMPTY STATE */
+      .empty-state {
+        padding: 45px 20px;
+        color: #9ca3af;
+        text-align: center;
+        font-size: 12px;
+        line-height: 1.7;
+      }
+
+      .empty-icon {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 25px;
+      }
+
+      /* LEGEND */
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        padding-top: 19px;
+        margin-top: 18px;
+        border-top: 1px solid #f1f5f9;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #6b7280;
+        font-size: 10px;
+        font-weight: 500;
+      }
+
+      .legend-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 3px;
+      }
+
+      /* RESPONSIVE */
+      @media (max-width: 900px) {
+        .sidebar {
+          width: 220px;
+        }
+
+        .main {
+          margin-left: 220px;
+          padding: 25px 20px;
+        }
+
+        .filter-group {
+          min-width: 180px;
+        }
+      }
+
+      @media (max-width: 700px) {
+        .sidebar {
+          position: relative;
+          width: 100%;
+          padding: 17px;
+        }
+
+        .brand {
+          margin-bottom: 20px;
+        }
+
+        .sidebar-bottom {
+          margin-top: 15px;
+        }
+
+        .menu-label {
+          margin-top: 15px;
+        }
+
+        .main {
+          margin-left: 0;
+          padding: 22px 15px;
+        }
+
+        .page-title {
+          font-size: 21px;
+        }
+
+        .page-badge {
+          display: none;
+        }
+
+        .panel {
+          padding: 16px;
+        }
+
+        .filter-form {
+          align-items: stretch;
+        }
+
+        .filter-group {
+          width: 100%;
+          min-width: 0;
+        }
+
+        .filter-form .button {
+          flex: 1;
+        }
+
+        .toolbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .date-navigation {
+          width: 100%;
+          justify-content: space-between;
+        }
+
+        .date-navigation h2 {
+          min-width: 0;
+          flex: 1;
+          font-size: 10px;
+        }
+
+        .legend {
+          gap: 13px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">▦</div>
+        <div class="brand-name">
+          Meeting Room
+          <span>Booking Management System</span>
+        </div>
+      </div>
+
+      <div class="menu-label">Main Menu</div>
+
+      <a th:href="@{/admin/dashboard}" class="menu-item">
+        <span class="menu-icon">▦</span>
+        Dashboard
+      </a>
+
+      <a th:href="@{/admin/rooms}" class="menu-item">
+        <span class="menu-icon">▣</span>
+        Kelola Ruangan
+      </a>
+
+      <a th:href="@{/admin/calendar}" class="menu-item">
+        <span class="menu-icon">▦</span>
+        Kalender Meeting
+      </a>
+
+      <a th:href="@{/admin/timeline}" class="menu-item active">
+        <span class="menu-icon">◷</span>
+        Timeline Ruangan
+      </a>
+
+      <a th:href="@{/admin/bookings}" class="menu-item">
+        <span class="menu-icon">▤</span>
+        Monitoring Booking
+      </a>
+
+      <div class="sidebar-bottom">
+        <div class="menu-label">Account</div>
+
+        <form th:action="@{/admin/logout}" method="post">
+          <button type="submit" class="logout-button">
+            <span>↪</span>
+            Logout
+          </button>
+        </form>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1 class="page-title">Timeline Meeting</h1>
+          <div class="subtitle">
+            Monitoring penggunaan ruangan berdasarkan jam dan tanggal.
+          </div>
+        </div>
+
+        <div class="page-badge">
+          <span class="page-badge-dot"></span>
+          Room Timeline
+        </div>
+      </header>
+
+      <section class="panel">
+        <div class="panel-heading">Jadwal Penggunaan Ruangan</div>
+        <div class="panel-description">
+          Lihat jadwal setiap ruangan dan identifikasi waktu yang masih
+          tersedia.
+        </div>
+
+        <!-- FILTER -->
+        <form th:action="@{/admin/timeline}" method="get" class="filter-form">
+          <div class="filter-group">
+            <label for="date">Tanggal Meeting</label>
+            <input
+              type="date"
+              id="date"
+              name="date"
+              class="filter-date"
+              th:value="${selectedDate}"
+            />
+          </div>
+
+          <div class="filter-group">
+            <label for="roomId">Pilih Ruangan</label>
+
+            <select id="roomId" name="roomId" class="filter-select">
+              <option value="" th:selected="${selectedRoomId == null}">
+                Semua Ruangan
+              </option>
+
+              <option
+                th:each="room : ${rooms}"
+                th:value="${room.roomId}"
+                th:text="${room.roomName}"
+                th:selected="${selectedRoomId != null
+                and selectedRoomId.equals(room.roomId)}"
+              >
+                Meeting Room A
+              </option>
+            </select>
+          </div>
+
+          <button type="submit" class="button primary">Terapkan Filter</button>
+
+          <a th:href="@{/admin/timeline}" class="button"> Reset </a>
+        </form>
+
+        <!-- DATE NAVIGATION -->
+        <div class="toolbar">
+          <div class="date-navigation">
+            <a
+              class="button"
+              th:href="@{/admin/timeline(date=${previousDate},roomId=${selectedRoomId})}"
+            >
+              ← Sebelumnya
+            </a>
+
+            <h2
+              th:text="${#temporals.format(selectedDate,'EEEE, dd MMM yyyy')}"
+            >
+              Senin, 10 November 2026
+            </h2>
+
+            <a
+              class="button"
+              th:href="@{/admin/timeline(date=${nextDate},roomId=${selectedRoomId})}"
+            >
+              Berikutnya →
+            </a>
+          </div>
+
+          <a
+            class="button primary"
+            th:href="@{/admin/timeline(roomId=${selectedRoomId})}"
+          >
+            Hari Ini
+          </a>
+        </div>
+
+        <div class="timeline-description">
+          <span>◷</span>
+          Jam operasional timeline: 07.00–18.00. Klik blok meeting untuk melihat
+          detail booking.
+        </div>
+
+        <!-- TIMELINE -->
+        <div class="timeline-wrapper">
+          <div class="timeline">
+            <!-- HEADER JAM -->
+            <div class="timeline-header">
+              <div class="room-header">Informasi Ruangan</div>
+
+              <div class="hours">
+                <div
+                  class="hour"
+                  th:each="hour : ${#numbers.sequence(7,17)}"
+                  th:text="${hour + ':00'}"
+                >
+                  07:00
+                </div>
+              </div>
+            </div>
+
+            <!-- BARIS RUANGAN -->
+            <div class="timeline-row" th:each="timelineRoom : ${timelineRooms}">
+              <div class="room-info">
+                <div class="room-name" th:text="${timelineRoom.room.roomName}">
+                  Meeting Room A
+                </div>
+
+                <div
+                  class="room-location"
+                  th:text="${timelineRoom.room.location}"
+                >
+                  Lantai 1
+                </div>
+
+                <div class="room-capacity">
+                  Kapasitas:
+                  <span th:text="${timelineRoom.room.capacity}">10</span>
+                  orang
+                </div>
+              </div>
+
+              <!-- TRACK -->
+              <div class="time-track">
+                <a
+                  th:each="item : ${timelineRoom.bookings}"
+                  th:href="@{/admin/bookings/{id}(id=${item.booking.bookingId})}"
+                  class="booking-block"
+                  th:classappend="${item.booking.endTime.isBefore(T(java.time.LocalDateTime).now()) or item.booking.endTime.isEqual(T(java.time.LocalDateTime).now()) ? ' finished' : (item.booking.startTime.isBefore(T(java.time.LocalDateTime).now()) or item.booking.startTime.isEqual(T(java.time.LocalDateTime).now()) ? ' ongoing' : '')}"
+                  th:style="${'left:' + item.left + '%;width:' + item.width + '%;'}"
+                  th:title="${item.booking.agenda + ' | ' + #temporals.format(item.booking.startTime,'HH:mm') + ' - ' + #temporals.format(item.booking.endTime,'HH:mm')}"
+                >
+                  <div
+                    class="booking-time"
+                    th:text="${#temporals.format(item.booking.startTime,'HH:mm') + ' - ' + #temporals.format(item.booking.endTime,'HH:mm')}"
+                  >
+                    09:00 - 10:00
+                  </div>
+
+                  <div class="booking-title" th:text="${item.booking.agenda}">
+                    Meeting
+                  </div>
+
+                  <div
+                    class="booking-person"
+                    th:text="${item.booking.bookerName}"
+                  >
+                    Pemesan
+                  </div>
+                </a>
+              </div>
+            </div>
+
+            <!-- EMPTY STATE -->
+            <div class="empty-state" th:if="${#lists.isEmpty(timelineRooms)}">
+              <span class="empty-icon">▦</span>
+              Tidak ada ruangan yang tersedia.
+            </div>
+          </div>
+        </div>
+
+        <!-- LEGEND -->
+        <div class="legend">
+          <div class="legend-item">
+            <span class="legend-dot" style="background: #2563eb"></span>
+            Akan Datang
+          </div>
+
+          <div class="legend-item">
+            <span class="legend-dot" style="background: #16a34a"></span>
+            Sedang Meeting
+          </div>
+
+          <div class="legend-item">
+            <span class="legend-dot" style="background: #64748b"></span>
+            Selesai
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
